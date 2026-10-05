@@ -14,11 +14,6 @@
   title = {{HTTP/1.1}}, institution = {RFC Editor}, type = {RFC}, number = {9112},
   year = {2022}, doi = {10.17487/RFC9112}
 }
-@techreport{rfc9113,
-  author = {Martin Thomson and Cory Benfield},
-  title = {{HTTP/2}}, institution = {RFC Editor}, type = {RFC}, number = {9113},
-  year = {2022}, doi = {10.17487/RFC9113}
-}
 @inproceedings{prism,
   author = {Yutaro Hayakawa and Michio Honda and Douglas Santry and Lars Eggert},
   title = {{Prism}: Proxies without the Pain},
@@ -43,33 +38,33 @@
 @online{github-multibinder,
   author = {{GitHub}},
   title = {{GLB} part 2: {HAProxy} zero-downtime, zero-delay reloads with multibinder},
-  date = {2016-12-01}, howpublished = {The GitHub Blog},
+  year = {2016}, month = dec, date = {2016-12-01}, howpublished = {The GitHub Blog},
   url = {https://github.blog/news-insights/glb-part-2-haproxy-zero-downtime-zero-delay-reloads-with-multibinder/},
   urldate = {2026-10-05}
 }
 @online{github-glb,
-  author = {{GitHub}}, title = {{GLB}: {GitHub}'s open source load balancer},
-  date = {2018-08-08}, howpublished = {The GitHub Blog},
+  author = {Theo Julienne}, title = {{GLB}: {GitHub}'s open source load balancer},
+  year = {2018}, month = aug, date = {2018-08-08}, howpublished = {The GitHub Blog},
   url = {https://github.blog/engineering/infrastructure/glb-director-open-source-load-balancer/},
   urldate = {2026-10-05}
 }
 @online{cloudflare-oxy,
   author = {Chris Branch}, title = {{Oxy}: the journey of graceful restarts},
-  date = {2023-04-04}, howpublished = {Cloudflare Blog},
+  year = {2023}, month = apr, date = {2023-04-04}, howpublished = {Cloudflare Blog},
   url = {https://blog.cloudflare.com/oxy-the-journey-of-graceful-restarts/},
   urldate = {2026-10-05}
 }
 @online{cloudflare-ecdysis,
   author = {Olguín Muñoz, Manuel},
   title = {Shedding old code with ecdysis: graceful restarts for {Rust} services at {Cloudflare}},
-  date = {2026-02-13}, howpublished = {Cloudflare Blog},
+  year = {2026}, month = feb, date = {2026-02-13}, howpublished = {Cloudflare Blog},
   url = {https://blog.cloudflare.com/ecdysis-rust-graceful-restarts/},
   urldate = {2026-10-05}
 }
 @online{fly-long-connections,
   author = {{Fly.io Community}},
   title = {Custom inbound {TCP} port \& long living connections},
-  date = {2021-02}, note = {Intercambio técnico entre Wouter y jerome, febrero de 2021},
+  year = {2021}, month = feb, date = {2021-02}, note = {Intercambio técnico entre Wouter y jerome, febrero de 2021},
   url = {https://community.fly.io/t/custom-inbound-tcp-port-long-living-connections/794},
   urldate = {2026-10-05}
 }
@@ -80,21 +75,45 @@
   url = {https://mosn.io/docs/products/structure/smooth-upgrade/},
   urldate = {2026-10-05}
 }
-@online{unix-rights,
-  author = {{Linux man-pages project}}, title = {unix(7): sockets for local interprocess communication},
-  howpublished = {Linux manual pages},
-  url = {https://man7.org/linux/man-pages/man7/unix.7.html},
-  urldate = {2026-10-05}
+@inproceedings{tcp-failover,
+  author = {Alex C. Snoeren and David G. Andersen and Hari Balakrishnan},
+  title = {Fine-Grained Failover Using Connection Migration},
+  booktitle = {3rd USENIX Symposium on Internet Technologies and Systems (USITS 01)},
+  year = {2001}, publisher = {USENIX Association},
+  url = {https://www.usenix.org/legacy/publications/library/proceedings/usits01/snoeren.html}
 }
-@online{criu-tcp,
-  author = {{CRIU}}, title = {{TCP} connection},
-  howpublished = {CRIU documentation},
-  url = {https://www.criu.org/TCP_connection}, urldate = {2026-10-05}
+@article{sockmi-ssl,
+  author = {Massimo Bernaschi and Francesco Casadei and Samuele Ruco},
+  title = {Migration of Secure Connections Using {SockMi}},
+  journal = {;login:}, volume = {32}, number = {4}, year = {2007}, month = aug,
+  pages = {29--36},
+  url = {https://www.usenix.org/publications/login/august-2007-volume-32-number-4/migration-secure-connections-using-sockmi}
 }
-@thesis{espol-disponibilidad,
-  author = {Rueda Hormaza, Escarleth Katherine and Andrade Mora, Gabriel Raúl},
-  title = {Diseño de un sistema de alta disponibilidad para acceso a internet orientado a {PYMEs}},
-  type = {Tesis de grado}, school = {Escuela Superior Politécnica del Litoral, FIEC},
-  year = {2017}, location = {Guayaquil, Ecuador},
-  url = {https://www.dspace.espol.edu.ec/handle/123456789/42584}
+@inproceedings{kitsune,
+  author = {Christopher M. Hayden and Edward K. Smith and Michail Denchev and Michael Hicks and Jeffrey S. Foster},
+  title = {{Kitsune}: Efficient, General-purpose Dynamic Software Updating for {C}},
+  booktitle = {ACM Conference on Object-Oriented Programming Systems, Languages, and Applications (OOPSLA)},
+  year = {2012}, publisher = {ACM}, doi = {10.1145/2384616.2384635},
+  url = {https://www.cs.umd.edu/~mwh/papers/hayden12kitsune.html}
+}
+@inproceedings{opennf,
+  author = {Aaron Gember-Jacobson and Raajay Viswanathan and Chaithan Prakash and Robert Grandl and Junaid Khalid and Sourav Das and Aditya Akella},
+  title = {{OpenNF}: Enabling Innovation in Network Function Control},
+  booktitle = {ACM SIGCOMM 2014 Conference}, year = {2014}, publisher = {ACM},
+  doi = {10.1145/2619239.2626313},
+  url = {https://opennf.cs.wisc.edu/docs/gember-jacobson2014opennf.pdf}
+}
+@inproceedings{ha-tcp,
+  author = {Haoyu Gu and Ali José Mashtizadeh and Bernard Wong},
+  title = {{HA/TCP}: A Reliable and Scalable Framework for {TCP} Network Functions},
+  booktitle = {22nd USENIX Symposium on Networked Systems Design and Implementation (NSDI 25)},
+  year = {2025}, pages = {899--914}, publisher = {USENIX Association},
+  url = {https://www.usenix.org/conference/nsdi25/presentation/gu}
+}
+@inproceedings{xo,
+  author = {Shuo Li and Steven Chien and Tianyi Gao and Michio Honda},
+  title = {Remote {TCP} Connection Offload and Applications},
+  booktitle = {23rd USENIX Symposium on Networked Systems Design and Implementation (NSDI 26)},
+  year = {2026}, pages = {527--541}, publisher = {USENIX Association},
+  url = {https://www.usenix.org/conference/nsdi26/presentation/li-shuo}
 }
