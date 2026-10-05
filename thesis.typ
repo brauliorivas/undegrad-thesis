@@ -40,5 +40,5 @@
 #pagebreak()
 #chapter-one()
 
-// After adding citations such as @rfc9293, uncomment this line to render IEEE references.
-// #ieee-references()
+#pagebreak()
+#ieee-references()

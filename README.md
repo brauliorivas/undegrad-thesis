@@ -19,6 +19,4 @@ bold, italic, and bold italic faces. It is a free substitute for Times New Roman
 ## IEEE citations
 
 Add BibTeX entries to `references.bib`, then cite a source in Spanish content
-using `@citation-key`, for example `@rfc9293`. When the document contains its
-first citation, uncomment `#ieee-references()` at the end of `thesis.typ`. Typst
-will render the bibliography in IEEE style with the heading `Referencias`.
+using `@citation-key`, for example `@rfc9293`. `#ieee-references()` at the end of `thesis.typ` renders the bibliography in IEEE style with the heading `Referencias`.
