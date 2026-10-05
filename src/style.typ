@@ -34,11 +34,15 @@
 ]
 
 #let roman-page-number = context [
-  #align(right)[#counter(page).display("I")]
+  #align(right)[
+    #move(dy: -0.6cm)[#counter(page).display("I")]
+  ]
 ]
 #let chapter-page-number = context {
   if counter(page).get().first() > 1 {
-    align(right)[#counter(page).display("1")]
+    align(right)[
+      #move(dy: -0.6cm)[#counter(page).display("1")]
+    ]
   }
 }
 
