@@ -68,11 +68,13 @@
 
   #heading-level-2("1.3", "Justificación del problema")
 
-  Ninguna de las alternativas de la @comparacion reúne las tres propiedades que definen el problema. La diferencia está en combinar la actualización local sobre #emph[sockets] de Linux, la conservación de TLS 1.3 y HTTP/1.1 en ambos lados y una interfaz reutilizable en Rust.
+  La necesidad de esta biblioteca surge cuando se quiere retirar una versión del #emph[proxy] mientras sus conexiones continúan activas. Mantener la recepción de tráfico nuevo no resuelve ese objetivo: si las comunicaciones establecidas siguen en el proceso anterior, su retiro todavía depende de que terminen. Para transferir su atención, el proceso nuevo debe recuperar las dos conexiones, sus contextos TLS, el avance de los mensajes HTTP y la asociación entre solicitudes y respuestas.
 
-  La contribución comprende tres resultados: una biblioteca para coordinar el traspaso local, adaptaciones que expongan y restauren estado TLS y HTTP, y una evaluación de continuidad, costos y esfuerzo de integración. Se elige una biblioteca porque permite separar el mecanismo de transferencia de las políticas de balanceo del #emph[proxy].
+  La @comparacion distingue lo que proporciona cada alternativa del trabajo que todavía exige este escenario. Ecdysis conserva la escucha y deja las conexiones aceptadas en el proceso anterior; Hot Restart Proxy traslada pares TCP, pero no incorpora la restauración TLS y HTTP. CRIU conserva la ejecución capturada, mientras que actualizar el código exige definir cómo interpretará otra versión el estado de aplicación. MOSN es un antecedente más cercano: migra la conexión con el cliente, pero establece una nueva hacia el servidor, según su documentación @mosn-upgrade. Por ello, ese procedimiento no conserva las dos conexiones que exige el proyecto.
 
-  Esta delimitación evita desarrollar un #emph[proxy] de producción o un módulo del #emph[kernel] para estudiar la actualización. Los resultados pueden ayudar a valorar cuándo una transferencia reduce la permanencia de versiones anteriores y qué adaptaciones exige. El beneficio para los usuarios se concreta en evitar reconexiones y conservar los datos de las comunicaciones evaluadas.
+  PRISM, XO y Capybara demuestran que trasladar estado TLS y HTTP es viable. Sus interfaces y mecanismos pueden servir como base, pero su escenario es redistribuir conexiones entre servidores. En particular, la implementación evaluada de Capybara utiliza una pila de red en espacio de usuario y un conmutador programable @capybara. Su adopción para actualizar un #emph[proxy] sobre #emph[sockets] existentes de Linux requiere adaptar la integración y comprobar la restauración de ambos lados entre versiones compatibles.
+
+  El aporte propuesto consiste en reunir ese trabajo de integración en una biblioteca: coordinar el traspaso local, conectar adaptadores que exporten y restauren el estado TLS/HTTP y confirmar que el proceso nuevo puede continuar antes de retirar el anterior. Una interfaz común permitiría incorporar el mecanismo a un #emph[proxy] sin volver a diseñar toda la coordinación, aunque cada biblioteca de protocolos requiera su adaptador. La evaluación determinará si esta integración conserva las comunicaciones admitidas, cómo cambia el tiempo de retiro del proceso anterior frente al drenaje y qué costos introduce.
 
   #heading-level-2("1.4", "Objetivos")
 
@@ -111,23 +113,23 @@
 
   CRIU (#emph[Checkpoint/Restore In Userspace]) es una herramienta que captura y restaura procesos Linux, incluidos sus recursos y memoria; también ofrece libsoccr como biblioteca para conservar conexiones TCP @criu. `TCP_REPAIR` es el modo de Linux que permite detener el procesamiento normal de una conexión y consultar o restaurar su estado, utilizado por esa biblioteca @libsoccr. COAT combina CRIU, contenedores y una red virtual para trasladar ejecuciones en el borde de la red @coat. Estos mecanismos restauran el estado capturado, sin definir automáticamente su conversión para otra versión del programa.
 
-  La actualización dinámica estudia esa conversión. Kitsune permite actualizar programas en C mediante puntos indicados por el desarrollador y transformaciones de datos @kitsune. MOSN documenta una actualización local entre procesos que pasa descriptores, búferes de lectura y estado TLS mediante un canal Unix; coordina además escrituras y respuestas todavía atendidas por la instancia anterior @mosn-upgrade. Como antecedente en Rust, el proyecto de demostración Hot Restart Proxy pasa pares de conexiones TCP entre procesos, aunque la demostración no incorpora estado TLS ni análisis HTTP @hot-restart-proxy. La @comparacion distingue las unidades de transferencia y las formas de reutilización documentadas.
+  La actualización dinámica estudia esa conversión. Kitsune permite actualizar programas en C mediante puntos indicados por el desarrollador y transformaciones de datos @kitsune. MOSN documenta una actualización local que pasa la conexión del cliente, sus búferes y el estado TLS mediante un canal Unix; la nueva instancia establece otra conexión con el servidor de destino @mosn-upgrade. Como antecedente en Rust, el proyecto de demostración Hot Restart Proxy pasa pares de conexiones TCP entre procesos, aunque la demostración no incorpora estado TLS ni análisis HTTP @hot-restart-proxy. La @comparacion resume qué proporciona cada mecanismo y qué resta integrar o validar para conservar ambos lados durante una actualización local.
 
   #chapter-table(
-    [Mecanismos de continuidad y formas de reutilización],
+    [Aporte de los mecanismos existentes y trabajo pendiente para el proyecto],
     ruled-table(
-      columns: (1.25fr, 1.8fr, 2.1fr, 2fr),
-      table.header([*Sistema*], [*Unidad y entorno*], [*Estado TLS y HTTP*], [*Reutilización documentada*]),
-      [Ecdysis @cloudflare-ecdysis], [Recursos de escucha; reinicio local.], [Conexiones aceptadas completadas en el proceso anterior.], [Biblioteca Rust; no restaura estos protocolos.],
-      [MOSN @mosn-upgrade], [Conexión aceptada; canal Unix local.], [TLS y búferes; procesamiento dependiente del protocolo.], [Mecanismo integrado en el #emph[proxy] Go.],
-      [SockMi @sockmi-ssl], [Conexión; módulo Linux y servicio.], [Estado OpenSSL anterior a TLS 1.3; HTTP no evaluado.], [Biblioteca de aplicación y módulo específicos.],
-      [CRIU / libsoccr @criu @libsoccr], [Proceso completo o recurso TCP; Linux.], [El proceso incluye su memoria; libsoccr solo trata TCP.], [Herramienta y bibliotecas; sin adaptación automática de versiones.],
-      [Hot Restart Proxy @hot-restart-proxy], [Par de conexiones TCP; canal Unix local.], [La demostración no incorpora TLS ni estado HTTP.], [Demostración Rust, ligada a su aplicación.],
-      [PRISM @prism], [Conexión entre servidores; Linux y red programable.], [TLS y estado HTTP serializados para atender solicitudes.], [API del sistema de transferencia.],
-      [XO @xo], [Conexión entre servidores; Linux y redirección programable.], [Contexto TLS y estado de la solicitud.], [Sistema de descarga con integración en aplicaciones.],
-      [Capybara @capybara], [Conexión entre servidores; Demikernel y conmutador programable.], [TLS con TLSe, biblioteca TLS en C, y solicitudes HTTP parciales.], [Interfaces de exportación e importación; componente Rust sobre su pila de red.],
+      columns: (1.15fr, 2.35fr, 3.5fr),
+      table.header([*Alternativa*], [*Qué proporciona*], [*Qué falta para este proyecto*]),
+      [Ecdysis @cloudflare-ecdysis], [Conserva los recursos de escucha durante el reemplazo local del proceso.], [Trasladar las conexiones aceptadas: permanecen en el proceso anterior y su retiro espera a que terminen.],
+      [Hot Restart Proxy @hot-restart-proxy], [Transfiere pares de conexiones TCP entre procesos Linux.], [Restaurar los dos contextos TLS y el estado HTTP; la demostración no incorpora esos protocolos.],
+      [CRIU / libsoccr @criu @libsoccr], [CRIU restaura el proceso y su memoria; libsoccr conserva el recurso TCP.], [Definir la restauración del estado en otra versión del programa. libsoccr no trata TLS ni HTTP.],
+      [SockMi @sockmi-ssl], [Exporta conexiones cifradas con OpenSSL mediante una biblioteca y un módulo Linux.], [Adaptar el mecanismo a TLS 1.3 y validar HTTP. Sus pruebas usan TLS anterior y el mismo programa.],
+      [MOSN @mosn-upgrade], [Migra localmente la conexión con el cliente, sus búferes y el estado TLS.], [Conservar también la conexión con el servidor: MOSN establece otra. Extraer su mecanismo del #emph[proxy] Go para integrarlo como biblioteca.],
+      [PRISM @prism], [Transfiere conexiones y estado TLS/HTTP a servidores, con una red programable.], [Adaptar su API al reemplazo local de versiones y al traspaso conjunto de ambos lados del #emph[proxy].],
+      [XO @xo], [Traslada conexiones y estado TLS/HTTP entre un balanceador y servidores, mediante eBPF.], [Integrar la descarga de conexiones en una actualización local que preserve ambos lados y su asociación.],
+      [Capybara @capybara], [Exporta e importa TCP, TLS con TLSe y solicitudes HTTP parciales; su prototipo usa Demikernel.], [Adaptar la implementación a #emph[sockets] de Linux y validar ambos lados del #emph[proxy] entre versiones compatibles.],
     ),
-    note: [La ausencia de evaluación HTTP en una fuente no demuestra que el sistema sea incapaz de soportarlo.],
+    note: [La columna final identifica integración o validación pendiente para el escenario propuesto; no afirma que extender estos sistemas sea imposible.],
     target: label("comparacion"),
   )
 
