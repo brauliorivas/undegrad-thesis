@@ -33,6 +33,8 @@
 #symbols()
 #pagebreak()
 #figure-index()
+#pagebreak()
+#table-index()
 
 // Chapter 1 starts Arabic numbering. Its first page counts as 1 but does not display it.
 #set page(numbering: "1", header: chapter-page-number, footer: none)
@@ -41,4 +43,5 @@
 #chapter-one()
 
 #pagebreak()
+#set page(numbering: none, header: none)
 #ieee-references()

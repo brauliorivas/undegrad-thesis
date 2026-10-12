@@ -1,4 +1,5 @@
-% Fuentes primarias del capítulo 1. Las fuentes web se consultaron el 2026-10-05.
+% Fuentes primarias del capítulo 1. La revisión se amplió el 2026-10-12.
+% Las páginas sin fecha de publicación conservan solo la fecha de consulta.
 @techreport{rfc9293,
   author = {Wesley M. Eddy},
   title = {Transmission Control Protocol ({TCP})},
@@ -35,38 +36,31 @@
   year = {2023}, publisher = {IEEE}, doi = {10.1109/MedComNet58619.2023.10168849},
   url = {https://iris.polito.it/handle/11583/2978170}
 }
-@online{github-multibinder,
+@article{github-multibinder,
   author = {{GitHub}},
   title = {{GLB} part 2: {HAProxy} zero-downtime, zero-delay reloads with multibinder},
-  year = {2016}, month = dec, date = {2016-12-01}, howpublished = {The GitHub Blog},
+  year = {2016}, month = dec, date = {2016-12-01}, journal = {The GitHub Blog},
   url = {https://github.blog/news-insights/glb-part-2-haproxy-zero-downtime-zero-delay-reloads-with-multibinder/},
-  urldate = {2026-10-05}
+  urldate = {2026-10-12}
 }
-@online{github-glb,
+@article{github-glb,
   author = {Theo Julienne}, title = {{GLB}: {GitHub}'s open source load balancer},
-  year = {2018}, month = aug, date = {2018-08-08}, howpublished = {The GitHub Blog},
+  year = {2018}, month = aug, date = {2018-08-08}, journal = {The GitHub Blog},
   url = {https://github.blog/engineering/infrastructure/glb-director-open-source-load-balancer/},
   urldate = {2026-10-05}
 }
-@online{cloudflare-oxy,
+@article{cloudflare-oxy,
   author = {Chris Branch}, title = {{Oxy}: the journey of graceful restarts},
-  year = {2023}, month = apr, date = {2023-04-04}, howpublished = {Cloudflare Blog},
+  year = {2023}, month = apr, date = {2023-04-04}, journal = {Cloudflare Blog},
   url = {https://blog.cloudflare.com/oxy-the-journey-of-graceful-restarts/},
-  urldate = {2026-10-05}
+  urldate = {2026-10-12}
 }
-@online{cloudflare-ecdysis,
+@article{cloudflare-ecdysis,
   author = {Olguín Muñoz, Manuel},
   title = {Shedding old code with ecdysis: graceful restarts for {Rust} services at {Cloudflare}},
-  year = {2026}, month = feb, date = {2026-02-13}, howpublished = {Cloudflare Blog},
+  year = {2026}, month = feb, date = {2026-02-13}, journal = {Cloudflare Blog},
   url = {https://blog.cloudflare.com/ecdysis-rust-graceful-restarts/},
-  urldate = {2026-10-05}
-}
-@online{fly-long-connections,
-  author = {{Fly.io Community}},
-  title = {Custom inbound {TCP} port \& long living connections},
-  year = {2021}, month = feb, date = {2021-02}, note = {Intercambio técnico entre Wouter y jerome, febrero de 2021},
-  url = {https://community.fly.io/t/custom-inbound-tcp-port-long-living-connections/794},
-  urldate = {2026-10-05}
+  urldate = {2026-10-12}
 }
 @online{mosn-upgrade,
   author = {{MOSN}},
@@ -116,4 +110,70 @@
   booktitle = {23rd USENIX Symposium on Networked Systems Design and Implementation (NSDI 26)},
   year = {2026}, pages = {527--541}, publisher = {USENIX Association},
   url = {https://www.usenix.org/conference/nsdi26/presentation/li-shuo}
+}
+@online{nginx-control,
+  author = {{NGINX}}, title = {Controlling nginx},
+  url = {https://nginx.org/en/docs/control.html}, urldate = {2026-10-12},
+  note = {Documentación oficial, sin fecha de publicación indicada}
+}
+@online{haproxy-management,
+  author = {{HAProxy}}, title = {{HAProxy} Management Guide},
+  url = {https://www.haproxy.org/download/3.2/doc/management.txt},
+  urldate = {2026-10-12}, note = {Documentación de la versión 3.2}
+}
+@online{envoy-hot-restart,
+  author = {{Envoy Project}}, title = {Hot restart},
+  url = {https://www.envoyproxy.io/docs/envoy/v1.34.7/intro/arch_overview/operations/hot_restart},
+  urldate = {2026-10-12}, note = {Documentación de la versión 1.34.7}
+}
+@online{listenfd,
+  author = {{Proyecto listenfd}}, title = {Crate listenfd},
+  url = {https://docs.rs/listenfd/1.0.2/listenfd/},
+  urldate = {2026-10-12}, note = {Documentación de la versión 1.0.2}
+}
+@online{linux-unix,
+  author = {{Linux man-pages project}}, title = {unix(7): {UNIX} domain sockets},
+  url = {https://man7.org/linux/man-pages/man7/unix.7.html},
+  urldate = {2026-10-12}
+}
+@online{rustls-secrets,
+  author = {{Proyecto rustls}}, title = {{ExtractedSecrets}},
+  url = {https://docs.rs/rustls/0.23.35/rustls/struct.ExtractedSecrets.html},
+  urldate = {2026-10-12}, note = {Documentación de la versión 0.23.35}
+}
+@online{kernel-tls,
+  author = {{The Linux Kernel}}, title = {Kernel {TLS}},
+  url = {https://docs.kernel.org/networking/tls.html}, urldate = {2026-10-12}
+}
+@online{hyper-http1,
+  author = {{Proyecto hyper}}, title = {{Connection} in hyper::server::conn::http1},
+  url = {https://docs.rs/hyper/latest/hyper/server/conn/http1/struct.Connection.html},
+  urldate = {2026-10-12}, note = {Interfaz HTTP/1 del servidor}
+}
+@online{criu,
+  author = {{CRIU Project}}, title = {{CRIU}: Checkpoint/Restore tool},
+  url = {https://github.com/checkpoint-restore/criu}, urldate = {2026-10-12},
+  note = {Descripción oficial y bibliotecas independientes del proyecto}
+}
+@online{libsoccr,
+  author = {{CRIU Project}}, title = {libsoccr: interfaz de captura y restauración de conexiones {TCP}},
+  url = {https://github.com/checkpoint-restore/criu/blob/criu-dev/soccr/soccr.h},
+  urldate = {2026-10-12}, note = {Interfaz y condiciones de uso del código fuente}
+}
+@online{hot-restart-proxy,
+  author = {{conorbros}}, title = {Hot Restart Proxy},
+  url = {https://github.com/conorbros/hot-restart-proxy}, urldate = {2026-10-12},
+  note = {README y archivos src/handler.rs y src/server.rs de la demostración}
+}
+@techreport{rfc9000,
+  author = {Jana Iyengar and Martin Thomson},
+  title = {{QUIC}: A {UDP}-Based Multiplexed and Secure Transport},
+  institution = {RFC Editor}, type = {RFC}, number = {9000}, year = {2021},
+  doi = {10.17487/RFC9000}
+}
+@online{rust-ownership,
+  author = {Steve Klabnik and Carol Nichols},
+  title = {What Is Ownership?},
+  url = {https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html},
+  urldate = {2026-10-12}, note = {The Rust Programming Language, capítulo 4}
 }
