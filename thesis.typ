@@ -3,6 +3,7 @@
 #import "src/front-matter.typ": *
 #import "src/chapter-1.typ": chapter-one
 #import "src/references.typ": ieee-references
+#import "src/appendix-a.typ": search-method
 
 #show: thesis.with(
   title: thesis-title,
@@ -45,3 +46,7 @@
 #pagebreak()
 #set page(numbering: none, header: none)
 #ieee-references()
+
+#pagebreak()
+#set page(numbering: "1", header: chapter-page-number)
+#search-method()
