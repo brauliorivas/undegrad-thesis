@@ -117,38 +117,40 @@
   note = {Documentación oficial, sin fecha de publicación indicada}
 }
 @online{haproxy-management,
-  author = {{HAProxy}}, title = {{HAProxy} Management Guide},
+  author = {{HAProxy}}, title = {{HAProxy} Management Guide, versión 3.2},
   url = {https://www.haproxy.org/download/3.2/doc/management.txt},
   urldate = {2026-10-12}, note = {Documentación de la versión 3.2}
 }
 @online{envoy-hot-restart,
-  author = {{Envoy Project}}, title = {Hot restart},
+  author = {{Envoy Project}}, title = {Hot restart, {Envoy} 1.34.7},
   url = {https://www.envoyproxy.io/docs/envoy/v1.34.7/intro/arch_overview/operations/hot_restart},
   urldate = {2026-10-12}, note = {Documentación de la versión 1.34.7}
 }
 @online{listenfd,
-  author = {{Proyecto listenfd}}, title = {Crate listenfd},
+  author = {{Proyecto listenfd}}, title = {Crate listenfd 1.0.2},
   url = {https://docs.rs/listenfd/1.0.2/listenfd/},
   urldate = {2026-10-12}, note = {Documentación de la versión 1.0.2}
 }
 @online{linux-unix,
-  author = {{Linux man-pages project}}, title = {unix(7): {UNIX} domain sockets},
+  author = {{Linux man-pages project}}, title = {unix(7): {UNIX} domain sockets, Linux man-pages 6.19},
   url = {https://man7.org/linux/man-pages/man7/unix.7.html},
-  urldate = {2026-10-12}
+  urldate = {2026-10-12}, date = {2026-02-08},
+  note = {Linux man-pages 6.19}
 }
 @online{rustls-secrets,
-  author = {{Proyecto rustls}}, title = {{ExtractedSecrets}},
+  author = {{Proyecto rustls}}, title = {{ExtractedSecrets}, rustls 0.23.35},
   url = {https://docs.rs/rustls/0.23.35/rustls/struct.ExtractedSecrets.html},
   urldate = {2026-10-12}, note = {Documentación de la versión 0.23.35}
 }
 @online{kernel-tls,
   author = {{The Linux Kernel}}, title = {Kernel {TLS}},
-  url = {https://docs.kernel.org/networking/tls.html}, urldate = {2026-10-12}
+  url = {https://docs.kernel.org/networking/tls.html}, urldate = {2026-10-12},
+  note = {Documentación oficial, sin fecha de publicación o versión indicada en la página}
 }
 @online{hyper-http1,
-  author = {{Proyecto hyper}}, title = {{Connection} in hyper::server::conn::http1},
-  url = {https://docs.rs/hyper/latest/hyper/server/conn/http1/struct.Connection.html},
-  urldate = {2026-10-12}, note = {Interfaz HTTP/1 del servidor}
+  author = {{Proyecto hyper}}, title = {{Connection} in hyper::server::conn::http1, {Hyper} 1.12.0},
+  url = {https://docs.rs/hyper/1.12.0/hyper/server/conn/http1/struct.Connection.html},
+  urldate = {2026-10-12}, note = {Documentación de Hyper 1.12.0; interfaz HTTP/1 del servidor}
 }
 @online{criu,
   author = {{CRIU Project}}, title = {{CRIU}: Checkpoint/Restore tool},
@@ -161,9 +163,9 @@
   urldate = {2026-10-12}, note = {Interfaz y condiciones de uso del código fuente}
 }
 @online{hot-restart-proxy,
-  author = {{conorbros}}, title = {Hot Restart Proxy},
-  url = {https://github.com/conorbros/hot-restart-proxy}, urldate = {2026-10-12},
-  note = {README y archivos src/handler.rs y src/server.rs de la demostración}
+  author = {{conorbros}}, title = {Hot Restart Proxy, revisión b28ec3c5},
+  url = {https://github.com/conorbros/hot-restart-proxy/tree/b28ec3c5a5e74a8766f34a59c6b55a7d00afba7f}, urldate = {2026-10-12},
+  note = {Commit b28ec3c5a5e74a8766f34a59c6b55a7d00afba7f; README y archivos src/handler.rs y src/server.rs}
 }
 @techreport{rfc9000,
   author = {Jana Iyengar and Martin Thomson},
@@ -171,9 +173,15 @@
   institution = {RFC Editor}, type = {RFC}, number = {9000}, year = {2021},
   doi = {10.17487/RFC9000}
 }
-@online{rust-ownership,
-  author = {Steve Klabnik and Carol Nichols},
-  title = {What Is Ownership?},
-  url = {https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html},
-  urldate = {2026-10-12}, note = {The Rust Programming Language, capítulo 4}
+@online{rust-ownedfd,
+  author = {{The Rust Project}}, title = {{OwnedFd} in std::os::fd, {Rust} 1.99.0},
+  url = {https://doc.rust-lang.org/std/os/fd/struct.OwnedFd.html},
+  urldate = {2026-10-12}, note = {Documentación de Rust 1.99.0; cierre del descriptor al liberar el valor}
+}
+@article{mandiant-tte,
+  author = {Casey Charrier and Robert Weiner},
+  title = {How Low Can You Go? An Analysis of 2023 Time-to-Exploit Trends},
+  journal = {Google Cloud Blog}, year = {2024}, month = oct, date = {2024-10-15},
+  url = {https://cloud.google.com/blog/topics/threat-intelligence/time-to-exploit-trends-2023},
+  urldate = {2026-10-12}
 }
