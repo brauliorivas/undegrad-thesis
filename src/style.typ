@@ -1,7 +1,7 @@
 // General formatting rules for the Materia Integradora template.
 #let primary-font = "Liberation Serif"
 #let body-text-size = 12pt
-#let chapter-heading-size = 13pt
+#let chapter-heading-size = body-text-size
 
 #let bold(body) = text(weight: "bold")[#body]
 #let bold-italic(body) = text(weight: "bold", style: "italic")[#body]

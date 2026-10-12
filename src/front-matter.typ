@@ -107,7 +107,9 @@
 #let figure-index() = [
   #front-matter-title("Índice de figuras")
   #outline(target: figure.where(kind: image), title: none)
-  #v(1em)
-  #set par(first-line-indent: 0pt)
-  [Las figuras que se añadan al documento aparecerán aquí automáticamente.]
+]
+
+#let table-index() = [
+  #front-matter-title("Índice de tablas")
+  #outline(target: figure.where(kind: table), title: none)
 ]

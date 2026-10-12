@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="302" viewBox="0 0 600 302">
+  <g font-family="Liberation Sans, Arial, sans-serif" font-size="16" fill="#202020" text-anchor="middle">
+    <rect x="8" y="12" width="106" height="42" fill="#f5f5f5" stroke="#333"/>
+    <text x="61" y="39">Cliente</text>
+    <rect x="247" y="12" width="106" height="42" fill="#f5f5f5" stroke="#333"/>
+    <text x="300" y="39" font-style="italic">Proxy</text>
+    <rect x="486" y="12" width="106" height="42" fill="#f5f5f5" stroke="#333"/>
+    <text x="539" y="39">Destino</text>
+    <path d="M118 33H242m-6-5 6 5-6 5M118 33l6-5m-6 5 6 5M358 33H481m-6-5 6 5-6 5M358 33l6-5m-6 5 6 5" fill="none" stroke="#333" stroke-width="1.3"/>
+    <text x="177" y="76">Cliente–proxy</text>
+    <text x="423" y="76">Proxy–destino</text>
+    <rect x="79" y="88" width="197" height="115" fill="white" stroke="#333"/>
+    <rect x="324" y="88" width="197" height="115" fill="white" stroke="#333"/>
+    <text x="177" y="105">HTTP/1.1</text>
+    <text x="423" y="105">HTTP/1.1</text>
+    <text x="177" y="123">Búferes de mensajes</text>
+    <text x="423" y="123">Búferes de mensajes</text>
+    <path d="M79 132H276M324 132H521M79 165H276M324 165H521" fill="none" stroke="#777"/>
+    <text x="177" y="153">TLS 1.3: rol servidor</text>
+    <text x="423" y="153">TLS 1.3: rol cliente</text>
+    <text x="177" y="189"><tspan font-style="italic">Socket</tspan> TCP en Linux</text>
+    <text x="423" y="189"><tspan font-style="italic">Socket</tspan> TCP en Linux</text>
+    <path d="M177 204V226H423V204M300 226V240" fill="none" stroke="#555" stroke-width="1.2"/>
+    <rect x="47" y="241" width="506" height="52" fill="#f5f5f5" stroke="#333"/>
+    <text x="300" y="262">Estado común del <tspan font-style="italic">proxy</tspan></text>
+    <text x="300" y="283">Asociación de conexiones, solicitudes y respuestas pendientes</text>
+  </g>
+</svg>
