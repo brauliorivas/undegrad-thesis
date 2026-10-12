@@ -70,7 +70,7 @@
 
   Ninguna de las alternativas de la @comparacion reúne las tres propiedades que definen el problema. La diferencia está en combinar la actualización local sobre #emph[sockets] de Linux, la conservación de TLS 1.3 y HTTP/1.1 en ambos lados y una interfaz reutilizable en Rust.
 
-  La contribución comprende tres resultados: una biblioteca para coordinar el traspaso local, adaptaciones que expongan y restauren estado TLS y HTTP, y una evaluación de continuidad, costos y esfuerzo de integración. Se elige una biblioteca porque permite separar el mecanismo de transferencia de las políticas de balanceo del #emph[proxy]. Rust permite expresar quién administra cada descriptor mediante tipos como `OwnedFd`, que lo cierra al finalizar su vida útil @rust-ownedfd. Esta propiedad ayuda a organizar la entrega y liberación de referencias locales durante el traspaso. La confirmación entre procesos y la consistencia de los protocolos requieren coordinación explícita en la biblioteca.
+  La contribución comprende tres resultados: una biblioteca para coordinar el traspaso local, adaptaciones que expongan y restauren estado TLS y HTTP, y una evaluación de continuidad, costos y esfuerzo de integración. Se elige una biblioteca porque permite separar el mecanismo de transferencia de las políticas de balanceo del #emph[proxy].
 
   Esta delimitación evita desarrollar un #emph[proxy] de producción o un módulo del #emph[kernel] para estudiar la actualización. Los resultados pueden ayudar a valorar cuándo una transferencia reduce la permanencia de versiones anteriores y qué adaptaciones exige. El beneficio para los usuarios se concreta en evitar reconexiones y conservar los datos de las comunicaciones evaluadas.
 
