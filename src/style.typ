@@ -1,3 +1,5 @@
+#import "chapter-visuals.typ": caption-below
+
 // General formatting rules for the Materia Integradora template.
 #let primary-font = "Liberation Serif"
 #let body-text-size = 12pt
@@ -16,22 +18,19 @@
   #par(first-line-indent: 0pt)[#h(1.27cm)#text(size: body-text-size)[#bold-italic[#title.]] #body]
 ]
 
-// Helpers that preserve APA figure and table formatting.
-#let figure-apa(number, title, body, note: none) = [
+// Legacy helpers follow the same caption and footnote layout.
+#let visual-with-caption(number, title, body, supplement, note: none) = block(breakable: false)[
   #set par(first-line-indent: 0pt)
-  #bold[Figura #number] #linebreak()
-  #text(style: "italic")[#title] #linebreak()
-  #body
-  #if note != none { [#linebreak()#bold[Nota.] #note] }
+  #align(center)[#body]
+  #v(.5em)
+  #align(center)[
+    #bold[#supplement #number] #emph[#title]
+    #if note != none { footnote(note) }
+  ]
 ]
 
-#let apa-table(number, title, body, note: none) = [
-  #set par(first-line-indent: 0pt)
-  #bold[Tabla #number] #linebreak()
-  #text(style: "italic")[#title] #linebreak()
-  #body
-  #if note != none { [#linebreak()#bold[Nota.] #note] }
-]
+#let figure-apa(number, title, body, note: none) = visual-with-caption(number, title, body, [Figura], note: note)
+#let apa-table(number, title, body, note: none) = visual-with-caption(number, title, body, [Tabla], note: note)
 
 #let roman-page-number = context [
   #align(right)[
@@ -70,6 +69,12 @@
     // Match the line gap across paragraph boundaries without extra spacing.
     spacing: 1em,
   )
+
+  // Captions sit below figures and tables; notes use native page footnotes.
+  set figure.caption(position: bottom)
+  show figure.caption: caption-below
+  show footnote.entry: set text(size: body-text-size - 2pt)
+  show footnote.entry: set par(first-line-indent: 0pt, leading: 0pt, spacing: 0pt)
 
   // APA heading hierarchy: level 1 is centered; levels 2–5 use body size.
   show heading.where(level: 1): it => block(
