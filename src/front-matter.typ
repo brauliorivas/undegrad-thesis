@@ -89,9 +89,20 @@
   #front-matter-title("Abreviaturas")
   #set par(first-line-indent: 0pt)
   #grid(columns: (2.8cm, 1fr), row-gutter: .7em,
-    [TCP], [Transmission Control Protocol],
-    [IP], [Internet Protocol],
-    [NAT], [Network Address Translation],
+    [API], [#emph[Application Programming Interface]: interfaz de programación de aplicaciones.],
+    [COAT], [#emph[Container OverlAy TCP]: arquitectura de migración de conexiones para contenedores.],
+    [CPU], [#emph[Central Processing Unit]: unidad central de procesamiento.],
+    [CRIU], [#emph[Checkpoint/Restore In Userspace]: captura y restauración de procesos en espacio de usuario.],
+    [eBPF], [Tecnología de Linux para ejecutar programas verificados en el #emph[kernel].],
+    [ESPOL], [Escuela Superior Politécnica del Litoral.],
+    [HA/TCP], [Sistema de alta disponibilidad para funciones de red TCP.],
+    [HTTP], [#emph[Hypertext Transfer Protocol]: protocolo de transferencia de hipertexto.],
+    [kTLS], [#emph[Kernel TLS]: procesamiento de registros TLS en el #emph[kernel] de Linux.],
+    [MOSN], [#emph[Modular Open Smart Network]: plataforma de #emph[proxies] escrita en Go.],
+    [OTRI], [Oficina de Transferencia de Resultados de Investigación.],
+    [QUIC], [Protocolo de transporte seguro con flujos multiplexados y migración de rutas.],
+    [TCP], [#emph[Transmission Control Protocol]: protocolo de control de transmisión.],
+    [TLS], [#emph[Transport Layer Security]: seguridad de la capa de transporte.],
   )
 ]
 
@@ -99,8 +110,10 @@
   #front-matter-title("Simbología")
   #set par(first-line-indent: 0pt)
   #grid(columns: (2.8cm, 1fr), row-gutter: .7em,
-    [$t$], [Tiempo],
-    [$R$], [Tasa de transferencia],
+    [%], [Porcentaje.],
+    [Gb/s], [Gigabits por segundo: unidad de tasa de transmisión de datos.],
+    [ms], [Milisegundo: $10^(-3)$ segundos.],
+    [µs], [Microsegundo: $10^(-6)$ segundos.],
   )
 ]
 
