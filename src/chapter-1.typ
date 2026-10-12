@@ -68,7 +68,7 @@
 
   #heading-level-2("1.3", "Justificación del problema")
 
-  Ninguna de las alternativas de la @comparacion reúne las tres propiedades que definen el problema. La diferencia está en combinar la actualización local sobre #emph[sockets] de Linux, la conservación de TLS 1.3 y HTTP/1.1 en ambos lados y una interfaz reutilizable en Rust. La metodología y las fuentes de esta comparación se detallan en el #link(<metodo-busqueda>)[Apéndice A].
+  Ninguna de las alternativas de la @comparacion reúne las tres propiedades que definen el problema. La diferencia está en combinar la actualización local sobre #emph[sockets] de Linux, la conservación de TLS 1.3 y HTTP/1.1 en ambos lados y una interfaz reutilizable en Rust.
 
   La contribución comprende tres resultados: una biblioteca para coordinar el traspaso local, adaptaciones que expongan y restauren estado TLS y HTTP, y una evaluación de continuidad, costos y esfuerzo de integración. Se elige una biblioteca porque permite separar el mecanismo de transferencia de las políticas de balanceo del #emph[proxy]. Rust permite expresar quién administra cada descriptor mediante tipos como `OwnedFd`, que lo cierra al finalizar su vida útil @rust-ownedfd. Esta propiedad ayuda a organizar la entrega y liberación de referencias locales durante el traspaso. La confirmación entre procesos y la consistencia de los protocolos requieren coordinación explícita en la biblioteca.
 
@@ -88,8 +88,6 @@
   + Evaluar continuidad, integridad, tiempos, pausa, CPU, memoria y esfuerzo de integración, con drenaje y ejecución sin actualización como referencias, para determinar la efectividad y los límites operativos.
 
   #heading-level-2("1.5", "Marco teórico")
-
-  La búsqueda de antecedentes en el repositorio de ESPOL no identificó trabajos directamente equivalentes sobre actualización de #emph[proxies] mediante migración de conexiones y estado TLS/HTTP; las consultas se registran en el #link(<metodo-busqueda>)[Apéndice A].
 
   #heading-level-3("1.5.1", "Proxies y actualización de procesos")
 
