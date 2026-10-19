@@ -111,8 +111,7 @@
   #set par(first-line-indent: 0pt)
   #grid(columns: (2.8cm, 1fr), row-gutter: .7em,
     [%], [Porcentaje.],
-    [Gb/s], [Gigabits por segundo: unidad de tasa de transmisión de datos.],
-    [ms], [Milisegundo: $10^(-3)$ segundos.],
+    [KB], [Kilobyte: unidad de tamaño del estado transferido.],
     [µs], [Microsegundo: $10^(-6)$ segundos.],
   )
 ]

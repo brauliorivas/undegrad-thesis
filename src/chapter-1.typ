@@ -6,7 +6,7 @@
 
   #heading-level-2("1.1", "Introducción")
 
-  Los servicios digitales necesitan corregir vulnerabilidades, incorporar funciones y modificar configuraciones mientras atienden a sus usuarios. Estas tareas suelen exigir el reemplazo de procesos que mantienen comunicaciones activas. En esa infraestructura, los #emph[proxies] balanceadores de carga son programas intermediarios que reciben solicitudes de clientes y las distribuyen entre servidores. Su actualización afecta tanto la recepción de tráfico nuevo como la continuidad de las comunicaciones que ya atienden.
+  Los servicios digitales necesitan corregir vulnerabilidades, incorporar funciones y modificar configuraciones mientras atienden a sus usuarios. Estas tareas suelen exigir el reemplazo de procesos que mantienen comunicaciones activas. En esa infraestructura, los #emph[proxies] balanceadores de carga son programas intermediarios que reciben solicitudes de clientes y las distribuyen entre servidores. Su actualización afecta tanto la recepción de tráfico nuevo como la continuidad de las comunicaciones que ya atienden. Surge así el problema de retirar la versión anterior sin cerrar esas comunicaciones ni esperar a que terminen.
 
   La duración de esas comunicaciones condiciona el mantenimiento. Cloudflare documentó que Oxy, su plataforma para construir #emph[proxies] en Rust, atiende conexiones prolongadas destinadas a respaldos, actualizaciones en tiempo real y sesiones remotas. El artículo explica que esperar un periodo de menor actividad no resuelve el problema cuando una corrección de seguridad requiere desplegarse de inmediato @cloudflare-oxy.
 
@@ -21,7 +21,7 @@
     target: label("actualizacion"),
   )
 
-  El proyecto integrador se orienta a una biblioteca reutilizable en Rust que transfiera conexiones activas y su estado entre procesos de una misma máquina Linux. Comprende comunicaciones protegidas con TLS 1.3, protocolo de seguridad para cifrar el intercambio, y HTTP/1.1, protocolo que organiza solicitudes y respuestas. La propuesta integra el componente en el código de un #emph[proxy] y requiere cooperación de las implementaciones de esos protocolos.
+  El proyecto integrador se orienta a una biblioteca reutilizable en Rust que transfiera conexiones activas y su estado entre procesos de una misma máquina Linux, incluso durante mensajes incompletos. Comprende comunicaciones protegidas con TLS 1.3, protocolo de seguridad para cifrar el intercambio, y HTTP/1.1, protocolo que organiza solicitudes y respuestas. La propuesta integra el componente en el código de un #emph[proxy] y requiere cooperación de las implementaciones de esos protocolos.
 
   Su desarrollo aplica contenidos de Sistemas Operativos, Seguridad de la Información, Sistemas Distribuidos y Computación en la Nube: administración de recursos, coordinación entre procesos, protección del estado criptográfico y evaluación bajo concurrencia. Para los desarrolladores de #emph[proxies], aporta una interfaz de integración y adaptaciones documentadas; para los equipos de operación, evidencia sobre continuidad y tiempo de mantenimiento. Su utilidad potencial consiste en actualizar infraestructura compartida sin exigir reconexiones a los usuarios de las comunicaciones transferidas.
 
@@ -29,9 +29,11 @@
 
   #heading-level-2("1.2", "Descripción del problema")
 
-  El problema abordado es la falta de un componente reutilizable en Rust con tres propiedades: transfiere localmente las conexiones aceptadas de un #emph[proxy]; conserva su estado TLS 1.3 y HTTP/1.1 en ambos lados; y ofrece una interfaz independiente de un #emph[proxy] particular. Existen mecanismos de migración, pero su adopción depende de plataformas, pilas de red o adaptaciones específicas. Por ello, el problema comprende definir qué estado debe exponer la aplicación, cómo coordinar el traspaso y bajo qué condiciones puede continuar la comunicación.
+  El problema abordado es la falta de un componente reutilizable en Rust con tres propiedades: transfiere localmente las conexiones aceptadas de un #emph[proxy]; conserva su estado TLS 1.3 y HTTP/1.1 en ambos lados durante mensajes incompletos; y ofrece una interfaz independiente de un #emph[proxy] particular. Existen mecanismos de migración, pero su adopción depende de plataformas, pilas de red o adaptaciones específicas. Por ello, el problema comprende definir qué estado debe exponer la aplicación, cómo coordinar el traspaso y bajo qué condiciones puede continuar la comunicación.
 
   El escenario principal es una actualización planificada entre dos procesos cooperantes en la misma máquina Linux. El #emph[proxy] mantiene dos conexiones independientes del protocolo de control de transmisión (TCP): cliente–#emph[proxy] y #emph[proxy]–servidor de destino. En ambas utiliza TLS 1.3 y HTTP/1.1, actuando como servidor frente al cliente y como cliente frente al destino. La transferencia comprende las dos conexiones, sus datos pendientes y la asociación que permite encaminar cada solicitud y respuesta, como representa la @estado-conexiones.
+
+  Un punto de integración es el lugar del código donde el #emph[proxy] invoca la biblioteca para registrar, transferir o restaurar una conexión. Un punto seguro es una condición de ejecución en la que puede capturarse un estado consistente, sin operaciones de entrada y salida ni tareas concurrentes que lo modifiquen. La captura se coordina entre operaciones del programa y no exige terminar el mensaje HTTP ni vaciar todos los búferes: los datos pendientes y el progreso del procesamiento forman parte del estado transferido. Esta condición se refiere a la aplicación; el #emph[kernel] sigue gestionando los paquetes TCP.
 
   #chapter-figure(
     [Conexiones y estado que conserva el proxy],
@@ -40,11 +42,15 @@
     target: label("estado-conexiones"),
   )
 
-  Un punto de integración es el lugar del código donde el #emph[proxy] invoca la biblioteca para registrar, transferir o restaurar una conexión. Un punto seguro es una condición de ejecución en la que puede capturarse un estado consistente, sin lecturas, escrituras o tareas concurrentes que lo modifiquen. Los adaptadores son componentes que conectan la interfaz de la biblioteca con una implementación concreta de TLS o HTTP. El diseño determina los puntos seguros admitidos y si incluyen mensajes HTTP en curso; la garantía de continuidad se limita a esos estados.
+  Los puntos seguros requeridos comprenden conexiones persistentes entre intercambios y la recepción o el envío de cuerpos HTTP aún incompletos. La validación incluye cargas y descargas con longitud conocida y con codificación por fragmentos, con un intercambio activo por par de conexiones. El proceso nuevo debe continuar desde el progreso registrado, sin repetir la solicitud ni esperar al final del cuerpo. Quedan fuera la migración durante el establecimiento TLS, las solicitudes HTTP canalizadas (#emph[pipelining]) y los cambios de protocolo, como WebSocket.
 
-  El alcance principal comprende el núcleo de coordinación y transferencia local, los adaptadores de TLS 1.3 y HTTP/1.1 para ambos lados y un #emph[proxy] sencillo de demostración. El núcleo administra el traspaso y la confirmación de restauración; los adaptadores exponen el estado específico de cada protocolo. Solo se admite compatibilidad con las bibliotecas adaptadas y con las versiones cuyo formato de estado se comprueba. La selección de dependencias depende de una prueba de exportación y restauración de su estado. La validación utiliza un solo #emph[proxy]; los resultados no establecen aplicabilidad a otros.
+  El alcance principal comprende el núcleo de coordinación y transferencia local, los adaptadores de TLS 1.3 y HTTP/1.1 para ambos lados y un #emph[proxy] sencillo de demostración. El núcleo administra el traspaso y la confirmación de restauración; los adaptadores conectan la interfaz común con cada implementación de protocolos y exponen su estado específico. Solo se admite compatibilidad con las bibliotecas adaptadas y con las versiones cuyo formato de estado se comprueba. El capítulo 2 seleccionará las dependencias mediante una prueba de exportación y restauración, y desarrollará el traspaso conjunto de ambas conexiones como alcance obligatorio. La validación utiliza un solo #emph[proxy]; los resultados no establecen aplicabilidad a otros.
 
-  HTTP/2 constituye una extensión opcional. Quedan fuera el traslado entre máquinas, la recuperación ante fallos abruptos, las aplicaciones sin cooperación y QUIC/HTTP/3. Los usuarios previstos son desarrolladores y operadores de infraestructura digital; el proyecto no tiene una organización cliente identificada. La @requisitos reúne las condiciones y variables que hacen observable el problema.
+  HTTP/2 constituye una extensión opcional. Quedan fuera el traslado entre máquinas, la recuperación ante fallos abruptos, las aplicaciones sin cooperación y QUIC/HTTP/3. Los usuarios previstos son desarrolladores y operadores de infraestructura digital; el proyecto no tiene una organización cliente identificada.
+
+  Se acepta una transferencia si ambas conexiones continúan, conservan contenido, orden y asociación, y el proceso anterior se retira tras la confirmación del nuevo. Las pruebas provocan el traspaso antes de completar cargas y descargas, incluidas escrituras parciales y datos pendientes; verifican el contenido recibido y la ausencia de nuevas conexiones y de un nuevo establecimiento TLS. Una pausa temporal se mide como latencia, sin confundirla con una reconexión.
+
+  La evaluación compara el mismo #emph[proxy] con migración, con drenaje y sin actualización: el drenaje contrasta el tiempo de retiro y la ejecución sin actualización mide la sobrecarga. La efectividad corresponde a continuidad e integridad; los límites operativos se caracterizan mediante tiempos, recursos, concurrencia y volumen pendiente. Se registran rechazos y transferencias incompletas, sin excluirlos del resultado. Las variables se comparan bajo las mismas cargas, sin anticipar umbrales numéricos. La @requisitos reúne las condiciones y variables que hacen observable el problema.
 
   #chapter-table(
     [Requisitos, restricciones y variables de evaluación],
@@ -54,27 +60,42 @@
       [Requisito], [Continuidad], [Ambas conexiones continúan sin reconexión ni un nuevo establecimiento de TLS causado por el traspaso.],
       [Requisito], [Integridad], [Contenido y orden conservados en ambas direcciones, sin pérdida, duplicación ni alteración de los datos entregados.],
       [Requisito], [Asociación], [Se conserva la asociación entre las dos conexiones de cada comunicación.],
+      [Requisito], [Mensaje en curso], [El traspaso se completa durante la recepción o el envío de un cuerpo HTTP, conservando su progreso y los búferes pendientes.],
       [Requisito], [Retiro], [El proceso nuevo confirma la restauración antes de que el proceso anterior se retire.],
       [Restricción], [Entorno y estado], [Linux local, procesos cooperantes, TLS establecido, puntos seguros y versiones compatibles. Acceso restringido al canal y a los secretos transferidos.],
       [Variable], [Tiempos], [Espera hasta el punto seguro, transferencia, pausa visible en cada extremo y retiro del proceso anterior.],
       [Variable], [Recursos y carga], [Uso de procesador (CPU) y memoria adicional; concurrencia, duración de conexiones y volumen de datos pendientes.],
       [Variable], [Integración], [Cambios en el #emph[proxy], tamaño de las adaptaciones y actividades necesarias para integrarlas.],
     ),
-    note: [Se acepta una transferencia si cumple continuidad e integridad en los escenarios de prueba y el proceso anterior se retira. Las variables de costo se comparan bajo las mismas cargas; no se fijan umbrales numéricos antes de obtener mediciones.],
     target: label("requisitos"),
   )
 
-  La evaluación compara el mismo #emph[proxy] con migración, con drenaje y sin actualización: el drenaje contrasta el tiempo de retiro y la ejecución sin actualización mide el costo añadido. Las pruebas registran además los rechazos y las transferencias incompletas, para delimitar el mecanismo.
-
   #heading-level-2("1.3", "Justificación del problema")
 
-  La necesidad de esta biblioteca surge cuando se quiere retirar una versión del #emph[proxy] mientras sus conexiones continúan activas. Mantener la recepción de tráfico nuevo no resuelve ese objetivo: si las comunicaciones establecidas siguen en el proceso anterior, su retiro todavía depende de que terminen. Para transferir su atención, el proceso nuevo debe recuperar las dos conexiones, sus contextos TLS, el avance de los mensajes HTTP y la asociación entre solicitudes y respuestas.
+  Resolver este problema permite actualizar el #emph[proxy] sin supeditar el retiro de la versión anterior a la duración de las comunicaciones. Cloudflare documenta esa dependencia al drenar conexiones prolongadas @cloudflare-oxy; GitHub describe cómo conserva la recepción de tráfico durante los reemplazos de HAProxy, mientras las conexiones establecidas permanecen en los procesos anteriores @github-multibinder. Para los operadores, reducir esa espera facilita retirar código que requiere correcciones y controlar la coexistencia de versiones. Para los usuarios, conservar la comunicación evita reiniciar una transferencia por el cambio del intermediario.
 
-  La @comparacion distingue lo que proporciona cada alternativa del trabajo que todavía exige este escenario. Ecdysis conserva la escucha y deja las conexiones aceptadas en el proceso anterior; Hot Restart Proxy traslada pares TCP, pero no incorpora la restauración TLS y HTTP. CRIU conserva la ejecución capturada, mientras que actualizar el código exige definir cómo interpretará otra versión el estado de aplicación. MOSN es un antecedente más cercano: migra la conexión con el cliente, pero establece una nueva hacia el servidor, según su documentación @mosn-upgrade. Por ello, ese procedimiento no conserva las dos conexiones que exige el proyecto.
+  Los antecedentes resuelven partes del problema mediante herencia de escucha, captura de procesos o migración de conexiones @cloudflare-ecdysis @criu @mosn-upgrade @capybara. Sin embargo, su integración debe considerar conjuntamente los dos lados del #emph[proxy], el estado TLS/HTTP y la restauración entre versiones compatibles sobre #emph[sockets] de Linux. La @comparacion sintetiza esa adaptación pendiente respecto al alcance del proyecto; sus limitaciones no se presentan como imposibilidad de extender los sistemas existentes.
 
-  PRISM, XO y Capybara demuestran que trasladar estado TLS y HTTP es viable. Sus interfaces y mecanismos pueden servir como base, pero su escenario es redistribuir conexiones entre servidores. En particular, la implementación evaluada de Capybara utiliza una pila de red en espacio de usuario y un conmutador programable @capybara. Su adopción para actualizar un #emph[proxy] sobre #emph[sockets] existentes de Linux requiere adaptar la integración y comprobar la restauración de ambos lados entre versiones compatibles.
+  // La comparación del proyecto se ubica aquí, fuera del marco teórico.
+  #chapter-table(
+    [Mecanismos existentes y adaptación requerida para el proyecto],
+    ruled-table(
+      columns: (1.15fr, 2.15fr, 3.2fr),
+      table.header([*Alternativa*], [*Qué proporciona*], [*Adaptación o validación requerida*]),
+      [Ecdysis @cloudflare-ecdysis], [Hereda recursos de escucha; las conexiones aceptadas permanecen en el proceso anterior.], [Trasladar también las conexiones aceptadas y su estado.],
+      [Hot Restart Proxy @hot-restart-proxy], [Transfiere pares TCP entre procesos Linux.], [Añadir restauración TLS y HTTP, ausente en la demostración.],
+      [CRIU / libsoccr @criu @libsoccr], [Captura procesos y memoria; libsoccr conserva TCP.], [Restaurar el estado en otra versión del programa; libsoccr no trata TLS/HTTP.],
+      [SockMi @sockmi-ssl], [Exporta conexiones cifradas con OpenSSL y un módulo Linux.], [Adaptar a TLS 1.3 y validar HTTP; sus pruebas usan TLS anterior y el mismo programa.],
+      [MOSN @mosn-upgrade], [Migra la conexión del cliente, búferes y TLS; abre otra hacia el servidor.], [Conservar también la conexión del servidor y extraer la coordinación del #emph[proxy] Go.],
+      [PRISM @prism], [Transfiere conexiones y TLS/HTTP a servidores con red programable.], [Adaptar la API al reemplazo local de versiones y al traspaso de ambos lados.],
+      [XO @xo], [Descarga conexiones y TLS/HTTP desde un balanceador mediante eBPF.], [Integrar la actualización local preservando ambas conexiones y su asociación.],
+      [Capybara @capybara], [Migra TCP, TLS con TLSe y solicitudes HTTP parciales; usa Demikernel.], [Adaptar a #emph[sockets] de Linux y validar ambos lados entre versiones compatibles.],
+    ),
+    note: [La última columna es un análisis del autor respecto al alcance propuesto, a partir de las fuentes citadas.],
+    target: label("comparacion"),
+  )
 
-  El aporte propuesto consiste en reunir ese trabajo de integración en una biblioteca: coordinar el traspaso local, conectar adaptadores que exporten y restauren el estado TLS/HTTP y confirmar que el proceso nuevo puede continuar antes de retirar el anterior. Una interfaz común permitiría incorporar el mecanismo a un #emph[proxy] sin volver a diseñar toda la coordinación, aunque cada biblioteca de protocolos requiera su adaptador. La evaluación determinará si esta integración conserva las comunicaciones admitidas, cómo cambia el tiempo de retiro del proceso anterior frente al drenaje y qué costos introduce.
+  El aporte consiste en una biblioteca que reúna la coordinación del traspaso local, los adaptadores TLS/HTTP y la confirmación de restauración antes de retirar el proceso anterior. Se elige Rust por su control de recursos mediante reglas de propiedad comprobadas por el compilador @rust-ownership, adecuado para gestionar conexiones y búferes. La interfaz común permitirá reutilizar la coordinación, aunque cada implementación de protocolos necesite adaptación. La evaluación aportará evidencia sobre continuidad durante mensajes incompletos, tiempo de retiro frente al drenaje y sobrecarga introducida.
 
   #heading-level-2("1.4", "Objetivos")
 
@@ -91,9 +112,11 @@
 
   #heading-level-2("1.5", "Marco teórico")
 
+  La literatura relaciona la actualización de intermediarios con la conservación de estado en varias capas. Primero se presentan el balanceo de carga y el reemplazo de procesos; después, el estado TCP, TLS y HTTP; finalmente, los mecanismos de migración y transferencia en funciones de red.
+
   #heading-level-3("1.5.1", "Proxies y actualización de procesos")
 
-  Un #emph[proxy] que termina conexiones mantiene una comunicación con el cliente y otra con el servidor de destino. HAProxy documenta que ambas son conexiones independientes, con procesamiento propio en cada lado @haproxy-management. En un intermediario HTTP, las solicitudes y respuestas se analizan y reenvían conforme a las reglas de delimitación y persistencia de HTTP/1.1 @rfc9112. Esta estructura sitúa el estado de transporte y de aplicación en el recorrido de una misma operación.
+  Un balanceador de carga distribuye comunicaciones entre servidores. En capa 4 toma decisiones con información de red y transporte, como direcciones y puertos; en capa 7 interpreta mensajes de aplicación, por ejemplo cabeceras y rutas HTTP @haproxy-intro. Un #emph[proxy] que termina conexiones mantiene una comunicación con el cliente y otra con el servidor de destino, con procesamiento independiente en cada lado @haproxy-management. En un intermediario HTTP, las solicitudes y respuestas se analizan y reenvían conforme a las reglas de delimitación y persistencia de HTTP/1.1 @rfc9112. Esta estructura sitúa el estado de transporte y de aplicación en el recorrido de una misma operación.
 
   NGINX, HAProxy y Envoy permiten reemplazar procesos conservando la recepción de tráfico: el proceso anterior atiende las conexiones existentes hasta completarlas o alcanzar el plazo de cierre @nginx-control @haproxy-management @envoy-hot-restart. Envoy indica expresamente que no las transfiere a la nueva instancia. Estos procedimientos constituyen el drenaje usado como referencia de evaluación. Multibinder @github-multibinder, ecdysis @cloudflare-ecdysis y listenfd @listenfd facilitan la herencia de recursos de escucha, sin trasladar el estado de las conexiones ya aceptadas.
 
@@ -113,42 +136,13 @@
 
   CRIU (#emph[Checkpoint/Restore In Userspace]) es una herramienta que captura y restaura procesos Linux, incluidos sus recursos y memoria; también ofrece libsoccr como biblioteca para conservar conexiones TCP @criu. `TCP_REPAIR` es el modo de Linux que permite detener el procesamiento normal de una conexión y consultar o restaurar su estado, utilizado por esa biblioteca @libsoccr. COAT combina CRIU, contenedores y una red virtual para trasladar ejecuciones en el borde de la red @coat. Estos mecanismos restauran el estado capturado, sin definir automáticamente su conversión para otra versión del programa.
 
-  La actualización dinámica estudia esa conversión. Kitsune permite actualizar programas en C mediante puntos indicados por el desarrollador y transformaciones de datos @kitsune. MOSN documenta una actualización local que pasa la conexión del cliente, sus búferes y el estado TLS mediante un canal Unix; la nueva instancia establece otra conexión con el servidor de destino @mosn-upgrade. Como antecedente en Rust, el proyecto de demostración Hot Restart Proxy pasa pares de conexiones TCP entre procesos, aunque la demostración no incorpora estado TLS ni análisis HTTP @hot-restart-proxy. La @comparacion resume qué proporciona cada mecanismo y qué resta integrar o validar para conservar ambos lados durante una actualización local.
-
-  #chapter-table(
-    [Aporte de los mecanismos existentes y trabajo pendiente para el proyecto],
-    ruled-table(
-      columns: (1.15fr, 2.35fr, 3.5fr),
-      table.header([*Alternativa*], [*Qué proporciona*], [*Qué falta para este proyecto*]),
-      [Ecdysis @cloudflare-ecdysis], [Conserva los recursos de escucha durante el reemplazo local del proceso.], [Trasladar las conexiones aceptadas: permanecen en el proceso anterior y su retiro espera a que terminen.],
-      [Hot Restart Proxy @hot-restart-proxy], [Transfiere pares de conexiones TCP entre procesos Linux.], [Restaurar los dos contextos TLS y el estado HTTP; la demostración no incorpora esos protocolos.],
-      [CRIU / libsoccr @criu @libsoccr], [CRIU restaura el proceso y su memoria; libsoccr conserva el recurso TCP.], [Definir la restauración del estado en otra versión del programa. libsoccr no trata TLS ni HTTP.],
-      [SockMi @sockmi-ssl], [Exporta conexiones cifradas con OpenSSL mediante una biblioteca y un módulo Linux.], [Adaptar el mecanismo a TLS 1.3 y validar HTTP. Sus pruebas usan TLS anterior y el mismo programa.],
-      [MOSN @mosn-upgrade], [Migra localmente la conexión con el cliente, sus búferes y el estado TLS.], [Conservar también la conexión con el servidor: MOSN establece otra. Extraer su mecanismo del #emph[proxy] Go para integrarlo como biblioteca.],
-      [PRISM @prism], [Transfiere conexiones y estado TLS/HTTP a servidores, con una red programable.], [Adaptar su API al reemplazo local de versiones y al traspaso conjunto de ambos lados del #emph[proxy].],
-      [XO @xo], [Traslada conexiones y estado TLS/HTTP entre un balanceador y servidores, mediante eBPF.], [Integrar la descarga de conexiones en una actualización local que preserve ambos lados y su asociación.],
-      [Capybara @capybara], [Exporta e importa TCP, TLS con TLSe y solicitudes HTTP parciales; su prototipo usa Demikernel.], [Adaptar la implementación a #emph[sockets] de Linux y validar ambos lados del #emph[proxy] entre versiones compatibles.],
-    ),
-    note: [La columna final identifica integración o validación pendiente para el escenario propuesto; no afirma que extender estos sistemas sea imposible.],
-    target: label("comparacion"),
-  )
+  La actualización dinámica estudia esa conversión. Kitsune permite actualizar programas en C mediante puntos indicados por el desarrollador y transformaciones de datos @kitsune. MOSN documenta una actualización local que pasa la conexión del cliente, sus búferes y el estado TLS mediante un canal Unix; la nueva instancia establece otra conexión con el servidor de destino @mosn-upgrade. Como antecedente en Rust, el proyecto de demostración Hot Restart Proxy pasa pares de conexiones TCP entre procesos, aunque la demostración no incorpora estado TLS ni análisis HTTP @hot-restart-proxy.
 
   #heading-level-3("1.5.4", "Transferencia en funciones de red y balanceo de carga")
 
-  OpenNF @opennf y HA/TCP @ha-tcp estudian el cambio del responsable de una comunicación mediante transferencia coordinada o réplicas sincronizadas; HA/TCP requiere además una pila FreeBSD modificada en espacio de usuario. Los sistemas de redistribución entre servidores de la @comparacion difieren en su infraestructura: PRISM utiliza un conmutador programable; XO, eBPF, infraestructura de Linux que ejecuta programas verificados para funciones como la redirección de paquetes; y Capybara, Demikernel, una pila de red que procesa paquetes fuera del #emph[kernel], y almacenamiento temporal del tráfico.
+  OpenNF estudia la transferencia coordinada de estado en funciones de red @opennf. HA/TCP utiliza réplicas sincronizadas y una pila FreeBSD modificada en espacio de usuario para cambiar el responsable de una conexión @ha-tcp. PRISM transfiere conexiones y estado TLS/HTTP mediante una red programable @prism; XO utiliza eBPF, infraestructura de Linux para ejecutar programas verificados, en la descarga de conexiones hacia servidores @xo.
 
-  Las mediciones de la @mediciones corresponden a unidades y entornos distintos y no permiten comparar velocidades entre sistemas. La migración de conexión de QUIC tiene otro significado: permite cambiar direcciones o rutas de una comunicación y no especifica cómo transferir la memoria de un #emph[proxy] entre versiones @rfc9000.
+  Capybara implementa exportación e importación del estado de aplicación sobre Demikernel, una pila de red en espacio de usuario, y un conmutador programable. Su servidor HTTP mínimo transfiere el búfer de una solicitud parcial; la integración TLS utiliza TLSe, que serializa contadores y registros pendientes. El sistema requiere que la aplicación proporcione un estado consistente. En ese entorno, reporta menos de 15 µs con el estado TCP básico y menos de 60 µs con 128 KB de estado TLS @capybara. Son mediciones de ese prototipo, no umbrales aplicables a otras implementaciones.
 
-  #chapter-table(
-    [Mediciones seleccionadas y su contexto experimental],
-    ruled-table(
-      columns: (1.05fr, 2.65fr, 2.6fr),
-      table.header([*Sistema*], [*Operación y entorno*], [*Medición publicada*]),
-      [PRISM @prism], [Ciclo entre servidores Linux: destino, entrada y otro destino; red programable.], [232 µs por ciclo; 109 µs corresponden a restaurar TLS.],
-      [HA/TCP @ha-tcp], [Cambio entre réplicas sincronizadas; pila TCP en espacio de usuario, red de 100 Gb/s.], [38 µs para el traspaso; no incluye la detección del fallo.],
-      [Capybara @capybara], [Mantenimiento de Redis, un almacén de datos en memoria, con TLS: 16 conexiones entre un servidor principal y uno de respaldo; infraestructura Demikernel.], [Unos 200 ms para recuperar el rendimiento tras el cierre; la migración previa conserva el rendimiento en esa prueba.],
-    ),
-    note: [Valores reportados por los autores en sus entornos.],
-    target: label("mediciones"),
-  )
+  La migración de conexión de QUIC tiene otro significado: permite cambiar direcciones o rutas de una comunicación y no especifica cómo transferir la memoria de un #emph[proxy] entre versiones @rfc9000.
 ]
