@@ -80,14 +80,14 @@
 
   #heading-level-3("1.4.1", "Objetivo general")
 
-  Desarrollar y evaluar una biblioteca en Rust, integrada en un #emph[proxy] con implementaciones adaptadas de TLS 1.3 y HTTP/1.1, que transfiera sus conexiones activas con clientes y servidores entre procesos de una misma máquina Linux, para actualizar el #emph[proxy] sin interrumpir las comunicaciones admitidas por el mecanismo.
+  Desarrollar una biblioteca en Rust que migre conexiones TCP activas entre procesos de un #emph[proxy] en la misma máquina, preservando el estado TLS/HTTP y manteniendo la continuidad de la comunicación.
 
   #heading-level-3("1.4.2", "Objetivos específicos")
 
-  + Identificar el estado de conexión, TLS 1.3 y HTTP/1.1 de ambos lados y los puntos seguros de transferencia, para determinar las adaptaciones y condiciones de continuidad.
-  + Diseñar la arquitectura, la interfaz de integración y el formato de intercambio de estado de la biblioteca, para coordinar una transferencia consistente entre versiones compatibles.
-  + Implementar la biblioteca, las adaptaciones TLS y HTTP y un #emph[proxy] de demostración, para comprobar la transferencia de ambas conexiones y su estado asociado.
-  + Evaluar continuidad, integridad, tiempos, pausa, CPU, memoria y esfuerzo de integración, con drenaje y ejecución sin actualización como referencias, para determinar la efectividad y los límites operativos.
+  + Identificar el estado de los protocolos de comunicación que debe preservarse para garantizar la continuidad de las conexiones durante su migración entre procesos.
+  + Diseñar la arquitectura de la biblioteca y el formato de intercambio de estado entre las instancias de origen y destino del #emph[proxy].
+  + Implementar la transferencia del #emph[socket] TCP y los adaptadores necesarios para la migración del estado TLS y HTTP en un #emph[proxy] de demostración.
+  + Evaluar el prototipo mediante pruebas de continuidad de conexiones, tiempo de migración y sobrecarga durante una actualización del #emph[proxy].
 
   #heading-level-2("1.5", "Marco teórico")
 
