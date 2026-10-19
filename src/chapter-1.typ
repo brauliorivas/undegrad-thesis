@@ -105,7 +105,7 @@
 
   #heading-level-3("1.4.2", "Objetivos específicos")
 
-  + Identificar el estado de los protocolos de comunicación que debe preservarse para garantizar la continuidad de las conexiones durante su migración entre procesos.
+  + Identificar el estado de los protocolos de comunicación que debe preservarse tal que garantice la continuidad de las conexiones durante su migración entre procesos.
   + Diseñar la arquitectura de la biblioteca y el formato de intercambio de estado entre las instancias de origen y destino del #emph[proxy].
   + Implementar la transferencia del #emph[socket] TCP y los adaptadores necesarios para la migración del estado TLS y HTTP en un #emph[proxy] de demostración.
   + Evaluar el prototipo mediante pruebas de continuidad de conexiones, tiempo de migración y sobrecarga durante una actualización del #emph[proxy].
