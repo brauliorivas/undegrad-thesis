@@ -1,4 +1,4 @@
-#import "chapter-visuals.typ": caption-below
+#import "chapter-visuals.typ": caption-above
 
 // General formatting rules for the Materia Integradora template.
 #let primary-font = "Liberation Serif"
@@ -18,15 +18,18 @@
   #par(first-line-indent: 0pt)[#h(1.27cm)#text(size: body-text-size)[#bold-italic[#title.]] #body]
 ]
 
-// Legacy helpers follow the same caption and footnote layout.
+// Legacy helpers follow the same caption-above and note-below layout.
 #let visual-with-caption(number, title, body, supplement, note: none) = block(breakable: false)[
   #set par(first-line-indent: 0pt)
-  #align(center)[#body]
+  #bold[#supplement #number]
+  #linebreak()
+  #emph[#title]
   #v(.5em)
-  #align(center)[
-    #bold[#supplement #number] #emph[#title]
-    #if note != none { footnote(note) }
-  ]
+  #align(center)[#body]
+  #if note != none {
+    v(.5em)
+    block(width: 100%)[#emph[Nota.] #note]
+  }
 ]
 
 #let figure-apa(number, title, body, note: none) = visual-with-caption(number, title, body, [Figura], note: note)
@@ -70,9 +73,9 @@
     spacing: 1em,
   )
 
-  // Captions sit below figures and tables; notes use native page footnotes.
-  set figure.caption(position: bottom)
-  show figure.caption: caption-below
+  // Number and title precede figures and tables; their notes follow the body.
+  set figure.caption(position: top)
+  show figure.caption: caption-above
   show footnote.entry: set text(size: body-text-size - 2pt)
   show footnote.entry: set par(first-line-indent: 0pt, leading: 0pt, spacing: 0pt)
 
