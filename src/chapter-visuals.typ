@@ -8,7 +8,7 @@
   #emph[#it.body]
 ]
 
-#let chapter-visual(title, body, kind: image, note: none, target: none) = {
+#let chapter-visual(title, body, kind: image, note: none, target: none, chapter: 1) = {
   set par(first-line-indent: 0pt)
   set figure.caption(position: top)
   show figure.caption: caption-above
@@ -25,15 +25,15 @@
     ],
     kind: kind,
     supplement: if kind == table { [Tabla] } else { [Figura] },
-    numbering: n => "1." + str(n),
+    numbering: n => str(chapter) + "." + str(n),
     caption: title,
     gap: .5em,
   )
   if target == none { visual } else { [#visual#target] }
 }
 
-#let chapter-figure(title, body, note: none, target: none) = chapter-visual(title, body, note: note, target: target)
-#let chapter-table(title, body, note: none, target: none) = chapter-visual(title, body, kind: table, note: note, target: target)
+#let chapter-figure(title, body, note: none, target: none, chapter: 1) = chapter-visual(title, body, note: note, target: target, chapter: chapter)
+#let chapter-table(title, body, note: none, target: none, chapter: 1) = chapter-visual(title, body, kind: table, note: note, target: target, chapter: chapter)
 
 // Tables use the body font and single line spacing inside their cells.
 #let ruled-table(columns: auto, ..cells) = {

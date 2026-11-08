@@ -2,6 +2,7 @@
 #import "src/data.typ": *
 #import "src/front-matter.typ": *
 #import "src/chapter-1.typ": chapter-one
+#import "src/chapter-2.typ": chapter-two
 #import "src/references.typ": ieee-references
 
 #show: thesis.with(
@@ -41,6 +42,9 @@
 #counter(page).update(1)
 #pagebreak()
 #chapter-one()
+
+#pagebreak()
+#chapter-two()
 
 #pagebreak()
 #set page(numbering: none, header: none)
