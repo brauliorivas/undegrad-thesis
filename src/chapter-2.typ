@@ -14,6 +14,18 @@
 
   El trabajo se organizó en cuatro etapas: comparación de alternativas, definición de la arquitectura, implementación incremental y evaluación controlada. Los requisitos del capítulo 1 guiaron la selección. Este capítulo documentó el diseño propuesto y el procedimiento previsto para validarlo. La selección definitiva de las dependencias quedó condicionada a las pruebas de exportación y restauración, todavía pendientes en este avance.
 
+  #heading-level-3("2.1.1", "Historias de usuario")
+
+  Las historias de usuario recogen las necesidades del desarrollador de #emph[proxies], del operador, del usuario del servicio y del investigador. Los criterios de aceptación completos y el documento firmado se incluyen en el #link(<anexo-historias>)[Anexo A].
+
+  - *HU-01. Integración de la biblioteca.* Como desarrollador de #emph[proxies], quiero integrar la biblioteca Rust mediante una interfaz documentada para registrar, transferir y restaurar pares de conexiones, y emplear adaptadores TLS 1.3 y HTTP/1.1 con una interfaz común.
+  - *HU-02. Transferencia del par de conexiones.* Como operador, quiero trasladar al nuevo proceso las conexiones cliente–#emph[proxy] y #emph[proxy]–servidor para mantener la comunicación durante la actualización, sin reconexiones y conservando la asociación de cada solicitud con su destino y respuesta.
+  - *HU-03. Conservación del estado TLS.* Como operador, quiero conservar los contextos TLS 1.3 de ambos lados y sus datos pendientes para continuar el intercambio cifrado sin un nuevo establecimiento de sesión ni alteración de los datos.
+  - *HU-04. Continuidad de las comunicaciones HTTP.* Como usuario del servicio, quiero que mis intercambios HTTP/1.1 continúen durante la actualización sin reconectarme ni repetir solicitudes. Esto requiere conservar el progreso, los búferes y las escrituras parciales, así como reutilizar las conexiones persistentes.
+  - *HU-05. Coordinación y retiro del proceso anterior.* Como operador, quiero retirar el proceso anterior solo después de confirmar que el nuevo asumió todas las comunicaciones que debía recibir. Si falla la restauración o falta su confirmación, quiero conocer el resultado y mantener el proceso anterior.
+  - *HU-06. Protección del estado transferido.* Como operador, quiero limitar el acceso al canal local y al estado criptográfico a procesos autorizados para impedir la entrega de descriptores o secretos a terceros.
+  - *HU-07. Evaluación de continuidad y costo.* Como investigador, quiero comparar la migración, el drenaje y la ejecución sin actualización bajo cargas equivalentes para verificar la continuidad y la integridad de las comunicaciones y medir los tiempos de traspaso y retiro, la pausa y el consumo de recursos.
+
   #heading-level-2("2.2", "Alternativas y selección de la solución")
 
   Se compararon tres mecanismos de actualización. El drenaje mantuvo su papel de referencia, porque permite atender las conexiones existentes en el proceso anterior mientras la nueva versión recibe tráfico. Envoy documenta que su reinicio no transfiere esas conexiones @envoy-hot-restart. Para este proyecto, esa dependencia de la duración de las comunicaciones impidió elegirlo como solución principal.
@@ -70,6 +82,16 @@
 
   El #emph[proxy] de demostración se delimitó a un intercambio HTTP/1.1 activo por par de conexiones, con TLS 1.3 establecido en ambos lados. Se incluyeron conexiones persistentes y cuerpos de longitud conocida o codificados por fragmentos. Se mantuvieron las restricciones y exclusiones del capítulo 1, con HTTP/2 como extensión opcional.
 
+  #heading-level-3("2.3.1", "Vistas de la arquitectura")
+
+  El modelo 4+1 de Kruchten describe la arquitectura desde cuatro perspectivas complementarias. Los escenarios relacionan esas perspectivas y permiten comprobar que, en conjunto, cubren el comportamiento esperado @kruchten-1995.
+
+  - *Vista lógica.* El coordinador controla el traspaso de cada par de conexiones. Los adaptadores conservan el estado TLS y HTTP, y el módulo de observabilidad registra el resultado.
+  - *Vista de procesos.* El proceso anterior pausa las operaciones y envía los descriptores y el estado. El proceso nuevo restaura el par y espera la autorización de activación para reanudar la comunicación. En cada fase solo un proceso está autorizado para operar sobre el par.
+  - *Vista de desarrollo.* La biblioteca Rust separa el núcleo de coordinación, el transporte Unix, los adaptadores de protocolo y la instrumentación. El #emph[proxy] de demostración integra esos módulos.
+  - *Vista física.* Las dos instancias del #emph[proxy] coexisten en el mismo equipo Linux y se comunican mediante un canal Unix de acceso restringido. El cliente y el servidor conservan sus conexiones TCP con el #emph[proxy].
+  - *Escenarios (+1).* Un cuerpo HTTP incompleto debe continuar tras el traspaso (HU-02 a HU-05). Ante un estado incompatible se rechaza el intento y se impide el retiro del proceso anterior (HU-05). Un proceso no autorizado queda excluido del canal de transferencia (HU-06).
+
   #heading-level-2("2.4", "Diseño detallado")
   #heading-level-3("2.4.1", "Estado y formato de intercambio")
 
@@ -103,6 +125,16 @@
 
   La prueba de viabilidad se definió sobre un intercambio con datos pendientes: pausar, exportar, reconstruir en otro proceso y continuar. Debía cubrir los papeles de cliente y servidor TLS, así como mensajes HTTP incompletos. Si una interfaz pública resultaba insuficiente, se previó documentar una modificación acotada de la dependencia. Las versiones y cambios concretos debían fijarse tras esa prueba. La aceptación exigió migrar mensajes incompletos.
 
+  #heading-level-3("2.4.4", "Panel de observabilidad")
+
+  La biblioteca registrará eventos del traspaso y ofrecerá un panel HTML opcional. Al habilitar la observabilidad en el #emph[proxy] de demostración, la biblioteca iniciará un servidor HTTP local para mostrar el panel. La instrumentación registrará el identificador y la hora de cada intento, la IP del #emph[proxy] que inicia la migración, la IP del servidor de destino y el resultado. Los registros se limitarán a metadatos operativos y excluirán los secretos TLS y los cuerpos HTTP.
+
+  - *Resumen.* Presentará el promedio de duración de las migraciones exitosas, contado desde la solicitud hasta la confirmación de activación. Mostrará los intentos exitosos y fallidos, con distinción entre rechazos y traspasos incompletos. La sobrecarga se expresará como la diferencia de CPU en puntos porcentuales y de memoria residente en MiB respecto a la ejecución sin actualización bajo carga equivalente.
+  - *Logs.* Mostrará una fila por intento, con hora, identificador, IP del #emph[proxy], IP de destino, duración hasta la activación cuando se haya confirmado, resultado y detalle operativo. Se prevén filtros por destino, resultado e intervalo de tiempo.
+  - *Servidores.* Agrupará por IP de destino los intentos, los éxitos y los fallos, y mostrará la tasa de éxito y la duración media de las migraciones exitosas. El destino corresponde al servidor de la conexión #emph[proxy]–servidor. La migración ocurre entre procesos del #emph[proxy] en el mismo equipo.
+
+  El prototipo del panel utiliza datos simulados. Las mediciones se obtendrán de las ejecuciones experimentales descritas en la sección 2.5.
+
   #heading-level-2("2.5", "Implementación y evaluación previstas")
 
   Se planificó implementar primero la transferencia de pares TCP, después la captura TLS y finalmente la conservación del procesamiento HTTP. Cada etapa se condicionó a verificar continuidad e integridad antes de añadir la siguiente. La entrega se definió como biblioteca Rust, adaptadores documentados, #emph[proxy] de demostración y herramientas para reproducir las pruebas.
@@ -113,7 +145,7 @@
 
   Para cada escenario se planificaron repeticiones independientes y un orden alternado de las modalidades. Una prueba piloto debía fijar los niveles de concurrencia, las duraciones y el número de repeticiones antes de la evaluación definitiva. Se dispuso registrar esos parámetros, el equipo, el sistema operativo y las versiones utilizadas, sin seleccionar únicamente ejecuciones exitosas.
 
-    - *Continuidad e integridad.* Se previó comparar el contenido, el orden y los identificadores de solicitud en ambos extremos. Se exigió verificar la ausencia de nuevas conexiones TCP o de un nuevo establecimiento TLS causado por la migración.
+  - *Continuidad e integridad.* Se previó comparar el contenido, el orden y los identificadores de solicitud en ambos extremos. Se exigió verificar la ausencia de nuevas conexiones TCP o de un nuevo establecimiento TLS causado por la migración.
   - *Tiempo de migración.* Se definió como el intervalo desde la solicitud hasta la confirmación de activación. Se separaron la espera del punto seguro y la transferencia/restauración. Se añadió el tiempo hasta el retiro efectivo del proceso anterior.
   - *Pausa observable.* Se definió como el intervalo sin progreso de la aplicación alrededor del traspaso. Se previó medirlo en cada extremo con reloj monotónico y contrastarlo con la ejecución sin actualización.
   - *Costo operativo.* Se propuso medir rendimiento, latencia, consumo de CPU, memoria y tamaño de la captura. Se incluyó el registro de los cambios necesarios para integrar los adaptadores.

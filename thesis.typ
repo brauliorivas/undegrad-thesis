@@ -50,3 +50,35 @@
 #set page(numbering: none, header: none)
 #ieee-references()
 
+
+#pagebreak()
+#set page(numbering: "1", header: chapter-page-number)
+#heading-level-1("ANEXOS")
+#heading(level: 2)[Anexo A. Historias de usuario firmadas] <anexo-historias>
+
+Historias de usuario y sus criterios de aceptación firmadas por el cliente.
+
+#let signed-stories = "files/historias-de-usuario-signed.pdf"
+#pdf.attach(
+  signed-stories,
+  mime-type: "application/pdf",
+  description: "Historias de usuario y criterios de aceptación con firma electrónica",
+)
+
+#for number in range(1, 4) {
+  // Typst does not import the signature widget. Its visible appearance is
+  // flattened into a copy of page 3 while the signed original stays attached.
+  let (source, source-page) = if number == 3 {
+    ("files/historias-de-usuario-pagina-firma.pdf", 1)
+  } else {
+    (signed-stories, number)
+  }
+  page(paper: "a4", flipped: true, margin: 0pt, numbering: none, header: none)[
+    #image(
+      source,
+      page: source-page,
+      width: 100%,
+      alt: "Historias de usuario y criterios de aceptación. Página " + str(number) + " de 3.",
+    )
+  ]
+}
