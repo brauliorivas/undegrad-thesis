@@ -127,13 +127,13 @@
 
   #heading-level-3("2.4.4", "Panel de observabilidad")
 
-  La biblioteca registrará eventos del traspaso y ofrecerá un panel HTML opcional. Al habilitar la observabilidad en el #emph[proxy] de demostración, la biblioteca iniciará un servidor HTTP local para mostrar el panel. La instrumentación registrará el identificador y la hora de cada intento, la IP del #emph[proxy] que inicia la migración, la IP del servidor de destino y el resultado. Los registros se limitarán a metadatos operativos y excluirán los secretos TLS y los cuerpos HTTP.
+  La biblioteca registrará eventos del traspaso y ofrecerá un panel HTML opcional. Al habilitar la observabilidad en el #emph[proxy] de demostración, la biblioteca iniciará un servidor HTTP local para mostrar el panel. La instrumentación registrará el identificador y la hora de cada intento, los identificadores de proceso (PID) de las dos instancias locales del #emph[proxy] y el resultado. El #emph[proxy] de demostración podrá asociar cada intento con el identificador del servidor HTTP que ya atiende la conexión. Los registros se limitarán a metadatos operativos y excluirán los secretos TLS y los cuerpos HTTP.
 
   - *Resumen.* Presentará el promedio de duración de las migraciones exitosas, contado desde la solicitud hasta la confirmación de activación. Mostrará los intentos exitosos y fallidos, con distinción entre rechazos y traspasos incompletos. La sobrecarga se expresará como la diferencia de CPU en puntos porcentuales y de memoria residente en MiB respecto a la ejecución sin actualización bajo carga equivalente.
-  - *Logs.* Mostrará una fila por intento, con hora, identificador, IP del #emph[proxy], IP de destino, duración hasta la activación cuando se haya confirmado, resultado y detalle operativo. Se prevén filtros por destino, resultado e intervalo de tiempo.
-  - *Servidores.* Agrupará por IP de destino los intentos, los éxitos y los fallos, y mostrará la tasa de éxito y la duración media de las migraciones exitosas. El destino corresponde al servidor de la conexión #emph[proxy]–servidor. La migración ocurre entre procesos del #emph[proxy] en el mismo equipo.
+  - *Logs.* Mostrará una fila por intento, con hora, identificador, PID del proceso anterior, PID del proceso nuevo, duración hasta la activación cuando se haya confirmado, resultado y detalle operativo. El registro podrá filtrarse por resultado.
+  - *Servidores.* Agrupará los intentos, los éxitos y los fallos por el servidor HTTP que ya atiende la conexión #emph[proxy]–servidor. Mostrará la tasa de éxito y la duración media de los intentos exitosos por servidor. El traspaso de las conexiones ocurre entre los dos procesos del #emph[proxy] en el mismo equipo Linux.
 
-  El prototipo del panel utiliza datos simulados. Las mediciones se obtendrán de las ejecuciones experimentales descritas en la sección 2.5.
+  El prototipo del panel se encuentra disponible en línea.#footnote[#link("https://www.figma.com/design/h3bnz9BI44GdkIczqj9SYo?node-id=4-38")[Prototipo del panel de observabilidad en Figma.]] Las mediciones se obtendrán de las ejecuciones experimentales descritas en la sección 2.5.
 
   #heading-level-2("2.5", "Implementación y evaluación previstas")
 
