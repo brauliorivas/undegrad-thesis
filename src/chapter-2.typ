@@ -26,6 +26,14 @@
   - *HU-06. Protección del estado transferido.* Como operador, quiero limitar el acceso al canal local y al estado criptográfico a procesos autorizados para impedir la entrega de descriptores o secretos a terceros.
   - *HU-07. Evaluación de continuidad y costo.* Como investigador, quiero comparar la migración, el drenaje y la ejecución sin actualización bajo cargas equivalentes para verificar la continuidad y la integridad de las comunicaciones y medir los tiempos de traspaso y retiro, la pausa y el consumo de recursos.
 
+  La @casos-de-uso identifica las interacciones de cada actor con el #emph[proxy], la biblioteca y el panel. El operador inicia la migración y revisa su resultado. El usuario del servicio realiza su solicitud HTTP a través del #emph[proxy] y espera que el intercambio continúe durante la actualización.
+
+  #chapter-figure(
+    [Casos de uso del proxy de demostración y la biblioteca de migración],
+    image("figures/diagrams/casos-de-uso.svg", width: 95%, alt: "El usuario realiza solicitudes HTTP, el desarrollador integra la biblioteca, el operador solicita y revisa migraciones y el investigador consulta métricas."),
+    target: label("casos-de-uso"),
+  )
+
   #heading-level-2("2.2", "Alternativas y selección de la solución")
 
   Se compararon tres mecanismos de actualización. El drenaje mantuvo su papel de referencia, porque permite atender las conexiones existentes en el proceso anterior mientras la nueva versión recibe tráfico. Envoy documenta que su reinicio no transfiere esas conexiones @envoy-hot-restart. Para este proyecto, esa dependencia de la duración de las comunicaciones impidió elegirlo como solución principal.
@@ -88,9 +96,15 @@
 
   - *Vista lógica.* El coordinador controla el traspaso de cada par de conexiones. Los adaptadores conservan el estado TLS y HTTP, y el módulo de observabilidad registra el resultado.
   - *Vista de procesos.* El proceso anterior pausa las operaciones y envía los descriptores y el estado. El proceso nuevo restaura el par y espera la autorización de activación para reanudar la comunicación. En cada fase solo un proceso está autorizado para operar sobre el par.
-  - *Vista de desarrollo.* La biblioteca Rust separa el núcleo de coordinación, el transporte Unix, los adaptadores de protocolo y la instrumentación. El #emph[proxy] de demostración integra esos módulos.
+  - *Vista de desarrollo.* La biblioteca Rust separa el núcleo de coordinación, el transporte Unix, los adaptadores de protocolo y la instrumentación. La @modulos-dependencias muestra cómo el #emph[proxy] de demostración accede a esos módulos mediante la interfaz de la biblioteca.
   - *Vista física.* Las dos instancias del #emph[proxy] coexisten en el mismo equipo Linux y se comunican mediante un canal Unix de acceso restringido. El cliente y el servidor conservan sus conexiones TCP con el #emph[proxy].
   - *Escenarios (+1).* Un cuerpo HTTP incompleto debe continuar tras el traspaso (HU-02 a HU-05). Ante un estado incompatible se rechaza el intento y se impide el retiro del proceso anterior (HU-05). Un proceso no autorizado queda excluido del canal de transferencia (HU-06).
+
+  #chapter-figure(
+    [Módulos y dependencias de la biblioteca de migración],
+    image("figures/diagrams/modulos-y-dependencias.svg", width: 84%, alt: "El proxy usa la API del núcleo de coordinación, que depende del transporte Unix, los adaptadores TLS y HTTP y el módulo de observabilidad."),
+    target: label("modulos-dependencias"),
+  )
 
   #heading-level-2("2.4", "Diseño detallado")
   #heading-level-3("2.4.1", "Estado y formato de intercambio")
@@ -116,6 +130,15 @@
   Antes de autorizar la activación, se permitió cancelar el traspaso y reanudar el origen tras confirmar que el receptor descartó su copia. Después de enviar la autorización, se prohibió reanudar automáticamente por un tiempo de espera agotado. La ausencia de respuesta podía significar que el proceso nuevo ya estuviera atendiendo la conexión. Se previó consultar el estado por identificador y registrar los casos irresueltos como transferencias incompletas. Este tratamiento no pretendió ofrecer recuperación ante fallos abruptos.
 
   Se distinguió liberar una referencia local de cerrar la comunicación con `shutdown`, operación que no se incluyó en el traspaso normal. Asimismo, se exigió reconstruir el registro de los descriptores en el entorno de ejecución del receptor y conservar exactamente los desplazamientos de las escrituras parciales.
+
+  La @secuencia-migracion muestra un traspaso exitoso durante el envío de un cuerpo HTTP. El nuevo proceso restaura el par en pausa y continúa el reenvío tras recibir la autorización. El cliente y el servidor conservan sus conexiones TCP y sus sesiones TLS.
+
+  #chapter-figure(
+    [Secuencia de migración durante el envío de un cuerpo HTTP],
+    image("figures/diagrams/secuencia-migracion.svg", width: 96%, alt: "El proxy anterior reenvía parte del cuerpo HTTP, pausa el par y transfiere los descriptores y el estado. El proxy nuevo restaura el par, recibe la autorización y reenvía el resto."),
+    note: [Los procesos intercambian los mensajes de control, los descriptores y el estado por el canal Unix.],
+    target: label("secuencia-migracion"),
+  )
 
   #heading-level-3("2.4.3", "Recursos y validación de dependencias")
 

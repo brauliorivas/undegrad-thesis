@@ -1,0 +1,37 @@
+@startuml
+top to bottom direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Liberation Sans
+skinparam defaultFontSize 16
+skinparam ranksep 15
+skinparam nodesep 20
+skinparam linetype ortho
+
+actor "Usuario del\nservicio" as Usuario
+actor "Desarrollador\nde proxies" as Desarrollador
+actor "Operador\ndel proxy" as Operador
+actor "Investigador" as Investigador
+
+rectangle "Sistema de migración TCP" {
+  usecase "Realizar una\nsolicitud HTTP" as Solicitud
+  usecase "Integrar la\nbiblioteca" as Integracion
+  usecase "Solicitar una\nmigración" as Migracion
+  usecase "Consultar el resultado\nde una migración" as Resultado
+  usecase "Investigar un\nintento fallido" as Fallo
+  usecase "Consultar métricas de\nduración y recursos" as Metricas
+
+  Solicitud -[hidden]down- Integracion
+  Integracion -[hidden]down- Migracion
+  Migracion -[hidden]down- Resultado
+  Resultado -[hidden]down- Fallo
+  Fallo -[hidden]down- Metricas
+}
+
+Usuario -right- Solicitud
+Desarrollador -right- Integracion
+Operador -right- Migracion
+Operador -right- Resultado
+Operador -right- Fallo
+Investigador -right- Metricas
+@enduml

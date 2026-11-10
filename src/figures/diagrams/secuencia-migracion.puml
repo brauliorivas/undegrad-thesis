@@ -1,0 +1,33 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Liberation Sans
+skinparam defaultFontSize 16
+skinparam BoxPadding 18
+hide footbox
+
+participant Cliente as Cliente
+box "Mismo equipo Linux" #F6F6F6
+  participant "Proxy anterior" as Anterior
+  participant "Proxy nuevo" as Nuevo
+end box
+participant "Servidor HTTP" as Servidor
+
+Cliente -> Anterior : Inicio del cuerpo
+Anterior -> Servidor : Reenvío parcial
+
+group Traspaso de la comunicación
+  Anterior -> Anterior : Pausar el par y\ncapturar el estado
+  Anterior -> Nuevo : Dos descriptores y\nestado TLS/HTTP
+  Nuevo -> Nuevo : Validar y restaurar\nel par en pausa
+  Nuevo --> Anterior : Restauración confirmada
+  Anterior -> Anterior : Renunciar a\nreanudar el par
+  Anterior -> Nuevo : Autorizar la activación
+  Nuevo -> Nuevo : Reanudar el par
+  Nuevo --> Anterior : Activación confirmada
+  Anterior -> Anterior : Liberar las\nreferencias locales
+end
+
+Cliente -> Nuevo : Resto del cuerpo
+Nuevo -> Servidor : Reenvío del resto
+@enduml

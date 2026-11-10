@@ -1,0 +1,25 @@
+@startuml
+top to bottom direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Liberation Sans
+skinparam defaultFontSize 16
+skinparam componentStyle rectangle
+
+component "Proxy de demostración" as Proxy
+
+package "Biblioteca Rust" {
+  component "Núcleo de\ncoordinación" as Nucleo
+  component "Transporte Unix" as Transporte
+  component "Adaptadores\nTLS y HTTP" as Adaptadores
+  component "Observabilidad\n(eventos y panel)" as Observabilidad
+
+  Nucleo ..> Transporte
+  Nucleo ..> Adaptadores
+  Nucleo ..> Observabilidad
+  Transporte -[hidden]right- Adaptadores
+  Adaptadores -[hidden]right- Observabilidad
+}
+
+Proxy ..> Nucleo : usa la API
+@enduml
