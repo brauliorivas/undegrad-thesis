@@ -133,7 +133,25 @@
   - *Logs.* Mostrará una fila por intento, con hora, identificador, PID del proceso anterior, PID del proceso nuevo, duración hasta la activación cuando se haya confirmado, resultado y detalle operativo. El registro podrá filtrarse por resultado.
   - *Servidores.* Agrupará los intentos, los éxitos y los fallos por el servidor HTTP que ya atiende la conexión #emph[proxy]–servidor. Mostrará la tasa de éxito y la duración media de los intentos exitosos por servidor. El traspaso de las conexiones ocurre entre los dos procesos del #emph[proxy] en el mismo equipo Linux.
 
-  El prototipo del panel se encuentra disponible en línea.#footnote[#link("https://www.figma.com/design/h3bnz9BI44GdkIczqj9SYo?node-id=4-38")[Prototipo del panel de observabilidad en Figma.]] Las mediciones se obtendrán de las ejecuciones experimentales descritas en la sección 2.5.
+  Las figuras #ref(<panel-resumen>, supplement: none), #ref(<panel-logs>, supplement: none) y #ref(<panel-servidores>, supplement: none) muestran las tres vistas principales del prototipo en Figma con datos de ejemplo.#footnote[#link("https://www.figma.com/design/h3bnz9BI44GdkIczqj9SYo?node-id=4-38")[Prototipo del panel de observabilidad en Figma.]] El #link(<anexo-prototipo>)[Anexo C] incluye todas las pantallas y muestra cómo se navega entre ellas. Las mediciones se obtendrán de las ejecuciones experimentales descritas en la sección 2.5.
+
+  #chapter-figure(
+    [Resumen de las migraciones],
+    image("figures/panel/resumen.jpg", width: 100%, alt: "Resumen del prototipo con duración media, resultados y consumo de recursos."),
+    target: label("panel-resumen"),
+  )
+
+  #chapter-figure(
+    [Registro de migraciones],
+    image("figures/panel/logs.jpg", width: 100%, alt: "Logs del prototipo con hora, procesos, duración, resultado y detalle de cada intento."),
+    target: label("panel-logs"),
+  )
+
+  #chapter-figure(
+    [Resultados por servidor HTTP],
+    image("figures/panel/servidores.jpg", width: 100%, alt: "Vista Servidores del prototipo con el número de intentos y sus resultados por servidor HTTP."),
+    target: label("panel-servidores"),
+  )
 
   #heading-level-2("2.5", "Implementación y evaluación previstas")
 
@@ -151,4 +169,16 @@
   - *Costo operativo.* Se propuso medir rendimiento, latencia, consumo de CPU, memoria y tamaño de la captura. Se incluyó el registro de los cambios necesarios para integrar los adaptadores.
 
   La comparación con drenaje se destinó a evaluar el tiempo de retiro. La ejecución sin actualización se destinó a estimar la sobrecarga. Se propuso informar medianas, percentiles y dispersión, junto con transferencias exitosas, rechazadas e incompletas. La interpretación se delimitó al entorno evaluado, sin anticipar umbrales de rendimiento ni extrapolar los resultados a otros #emph[proxies].
+
+  #heading-level-2("2.6", "Pruebas de usuario del panel")
+
+  El operador del #emph[proxy] es el usuario principal del panel. Lo consulta para revisar el traspaso antes de retirar el proceso anterior (HU-05). El investigador revisa la duración y el consumo de recursos (HU-07). El desarrollador puede usar el panel para revisar una integración (HU-01). El usuario del servicio se beneficia de la continuidad de sus conexiones (HU-04).
+
+  Las pruebas se centrarán en el perfil del operador del #emph[proxy]. Se buscarán participantes con experiencia en la operación de servicios en Linux y en la lectura de registros.
+
+  Se observará si quienes participen pueden explicar cómo salió la migración, interpretar el costo en CPU y memoria, investigar un intento fallido y distinguir el servidor HTTP de los procesos entre los que ocurre el traspaso. Por cada tarea se anotarán el resultado, la ayuda y las confusiones. La guía y la ficha de registro se incluyen en el #link(<anexo-pruebas>)[Anexo B].
+
+  #heading-level-2("2.7", "Resultados de las pruebas de usuario")
+
+  // Completar con los hallazgos registrados en el Anexo B.
 ]

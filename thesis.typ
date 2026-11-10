@@ -4,6 +4,8 @@
 #import "src/chapter-1.typ": chapter-one
 #import "src/chapter-2.typ": chapter-two
 #import "src/references.typ": ieee-references
+#import "src/annex-b.typ": annex-b
+#import "src/annex-c.typ": annex-c
 
 #show: thesis.with(
   title: thesis-title,
@@ -82,3 +84,8 @@ Historias de usuario y sus criterios de aceptación firmadas por el cliente.
     )
   ]
 }
+
+#annex-b()
+
+#pagebreak()
+#annex-c()

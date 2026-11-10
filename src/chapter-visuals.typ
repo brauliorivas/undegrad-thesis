@@ -1,30 +1,33 @@
 // Native figures retain counters, references and automatic indexes.
-// Captions precede the visual; notes belong to its body and stay out of indexes.
-#let caption-above(it) = block(width: 100%, breakable: false)[
-  #set align(left)
+#let visual-note(note, alignment: left) = block(width: 100%, above: .5em)[
+  #set align(alignment)
+  #emph[Nota.] #note
+]
+
+#let format-caption(it, note: none, alignment: center) = block(width: 100%, breakable: false)[
+  #set align(alignment)
   #set par(first-line-indent: 0pt)
   #strong[#it.supplement #context it.counter.display(it.numbering)]
   #linebreak()
   #emph[#it.body]
+  #if note != none { visual-note(note, alignment: alignment) }
 ]
 
 #let chapter-visual(title, body, kind: image, note: none, target: none, chapter: 1) = {
+  let is-table = kind == table
   set par(first-line-indent: 0pt)
-  set figure.caption(position: top)
-  show figure.caption: caption-above
+  set figure.caption(position: if is-table { top } else { bottom })
+  show figure.caption: format-caption.with(
+    note: if is-table { none } else { note },
+    alignment: if is-table { left } else { center },
+  )
   let visual = figure(
     [
       #body
-      #if note != none {
-        v(.5em)
-        block(width: 100%)[
-          #set align(left)
-          #emph[Nota.] #note
-        ]
-      }
+      #if is-table and note != none { visual-note(note) }
     ],
     kind: kind,
-    supplement: if kind == table { [Tabla] } else { [Figura] },
+    supplement: if is-table { [Tabla] } else { [Figura] },
     numbering: n => str(chapter) + "." + str(n),
     caption: title,
     gap: .5em,

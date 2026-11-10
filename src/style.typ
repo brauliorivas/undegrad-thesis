@@ -1,4 +1,4 @@
-#import "chapter-visuals.typ": caption-above
+#import "chapter-visuals.typ": format-caption, visual-note
 
 // General formatting rules for the Materia Integradora template.
 #let primary-font = "Liberation Serif"
@@ -18,22 +18,24 @@
   #par(first-line-indent: 0pt)[#h(1.27cm)#text(size: body-text-size)[#bold-italic[#title.]] #body]
 ]
 
-// Legacy helpers follow the same caption-above and note-below layout.
-#let visual-with-caption(number, title, body, supplement, note: none) = block(breakable: false)[
+// Legacy helpers use the same caption placement as native figures and tables.
+#let visual-with-caption(number, title, body, supplement, position, note: none) = block(breakable: false)[
   #set par(first-line-indent: 0pt)
-  #bold[#supplement #number]
-  #linebreak()
-  #emph[#title]
-  #v(.5em)
+  #let alignment = if position == bottom { center } else { left }
+  #let caption = block[
+    #set align(alignment)
+    #bold[#supplement #number]
+    #linebreak()
+    #emph[#title]
+  ]
+  #if position == top { caption }
   #align(center)[#body]
-  #if note != none {
-    v(.5em)
-    block(width: 100%)[#emph[Nota.] #note]
-  }
+  #if position == bottom { caption }
+  #if note != none { visual-note(note, alignment: alignment) }
 ]
 
-#let figure-apa(number, title, body, note: none) = visual-with-caption(number, title, body, [Figura], note: note)
-#let apa-table(number, title, body, note: none) = visual-with-caption(number, title, body, [Tabla], note: note)
+#let figure-apa(number, title, body, note: none) = visual-with-caption(number, title, body, [Figura], bottom, note: note)
+#let apa-table(number, title, body, note: none) = visual-with-caption(number, title, body, [Tabla], top, note: note)
 
 #let roman-page-number = context [
   #align(right)[
@@ -73,9 +75,8 @@
     spacing: 1em,
   )
 
-  // Number and title precede figures and tables; their notes follow the body.
-  set figure.caption(position: top)
-  show figure.caption: caption-above
+  set figure.caption(position: bottom)
+  show figure.caption: format-caption
   show footnote.entry: set text(size: body-text-size - 2pt)
   show footnote.entry: set par(first-line-indent: 0pt, leading: 0pt, spacing: 0pt)
 
