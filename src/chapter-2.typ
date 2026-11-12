@@ -1,4 +1,4 @@
-#import "style.typ": heading-level-1, heading-level-2, heading-level-3
+#import "style.typ": heading-level-1, heading-level-2, heading-level-3, figma-prototype-note
 #import "chapter-visuals.typ": chapter-figure, chapter-table, ruled-table
 
 #let chapter-two() = [
@@ -156,7 +156,7 @@
   - *Logs.* Mostrará una fila por intento, con hora, identificador, PID del proceso anterior, PID del proceso nuevo, duración hasta la activación cuando se haya confirmado, resultado y detalle operativo. El registro podrá ordenarse por hora en ambos sentidos y filtrarse por hora o por resultado. La vista indica que el proceso anterior solo se retira cuando se confirma que el nuevo asumió todas las conexiones previstas.
   - *Servidores.* Agrupará los intentos, los éxitos y los fallos por el servidor HTTP que ya atiende la conexión #emph[proxy]–servidor. Mostrará la tasa de éxito y la duración media de los intentos exitosos por servidor. El traspaso de las conexiones ocurre entre los dos procesos del #emph[proxy] en el mismo equipo Linux.
 
-  Las figuras #ref(<panel-resumen>, supplement: none), #ref(<panel-logs>, supplement: none) y #ref(<panel-servidores>, supplement: none) muestran las tres vistas principales del prototipo en Figma con datos de ejemplo.#footnote[#link("https://www.figma.com/proto/h3bnz9BI44GdkIczqj9SYo/Migraci%C3%B3n-TCP-%C2%B7-Panel-del-proxy?node-id=4-38&t=PsPjIbceD2Q6mwxN-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=4%3A38")[Prototipo del panel de observabilidad en Figma.]] El #link(<anexo-prototipo>)[Anexo C] reúne las vistas principales y documenta el acceso al registro de fallos. Las mediciones se obtendrán de las ejecuciones experimentales descritas en la sección 2.5.
+  Las figuras #ref(<panel-resumen>, supplement: none), #ref(<panel-logs>, supplement: none) y #ref(<panel-servidores>, supplement: none) muestran las tres vistas principales del prototipo en Figma con datos de ejemplo.#figma-prototype-note() El #link(<anexo-prototipo>)[Anexo C] reúne las vistas principales y documenta el acceso al registro de fallos. Las mediciones se obtendrán de las ejecuciones experimentales descritas en la sección 2.5.
 
   #chapter-figure(
     [Resumen de las migraciones],

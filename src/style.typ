@@ -1,9 +1,14 @@
 #import "chapter-visuals.typ": format-caption, visual-note
+#import "data.typ": figma-prototype-url
 
 // General formatting rules for the Materia Integradora template.
 #let primary-font = "Liberation Serif"
 #let body-text-size = 12pt
 #let chapter-heading-size = body-text-size
+
+#let figma-prototype-note() = footnote[
+  #link(figma-prototype-url)[#underline[#text(fill: rgb("#154A80"))[Abrir el prototipo en Figma]]]
+]
 
 #let bold(body) = text(weight: "bold")[#body]
 #let bold-italic(body) = text(weight: "bold", style: "italic")[#body]

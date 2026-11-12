@@ -8,3 +8,4 @@
 #let project-advisor = "MSc. Steven Isaac Santillan Padilla"
 #let city = "Guayaquil - Ecuador"
 #let year = "2026"
+#let figma-prototype-url = "https://www.figma.com/proto/h3bnz9BI44GdkIczqj9SYo/Migraci%C3%B3n-TCP-%C2%B7-Panel-del-proxy?node-id=4-38&t=PsPjIbceD2Q6mwxN-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=4%3A38"
