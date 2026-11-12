@@ -1,7 +1,7 @@
 #let university = "Escuela Superior Politécnica del Litoral"
 #let faculty = "Facultad de Ingeniería en Electricidad y Computación"
 #let thesis-title = "Migración de conexiones TCP en proxies balanceadores de carga"
-#let project-code = "[Código de Proyecto Integrador]"
+#let project-code = "TECH-482"
 #let degree = "Ingeniero en Ciencias de la Computación"
 #let author = "Braulio de Jesús Rivas Abad"
 #let course-instructor = "MSc. Ronald Criollo Bonilla"

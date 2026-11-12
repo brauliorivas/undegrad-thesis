@@ -5,7 +5,7 @@
 
   #heading(level: 3)[Guía de la sesión]
 
-  La sesión empieza en la vista Resumen del #link("https://www.figma.com/proto/h3bnz9BI44GdkIczqj9SYo/Migraci%C3%B3n-TCP-%C2%B7-Panel-del-proxy?node-id=4-38&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=4%3A38")[prototipo de Figma]. Quien modera ajusta la vista a la pantalla. Cada participante revisa una actualización simulada y explica en voz alta lo que observa.
+  La sesión empieza en la vista Resumen del #link("https://www.figma.com/proto/h3bnz9BI44GdkIczqj9SYo/Migraci%C3%B3n-TCP-%C2%B7-Panel-del-proxy?node-id=4-38&t=PsPjIbceD2Q6mwxN-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=4%3A38")[prototipo de Figma]. Quien modera ajusta la vista a la pantalla. Cada participante revisa una actualización simulada y explica en voz alta lo que observa.
 
   #ruled-table(
     columns: (auto, 1fr, 1.2fr),
