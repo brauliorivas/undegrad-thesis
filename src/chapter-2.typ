@@ -197,11 +197,15 @@
 
   El operador del #emph[proxy] es el usuario principal del panel. Lo consulta para revisar el traspaso antes de retirar el proceso anterior (HU-05). El investigador revisa la duración y el consumo de recursos (HU-07). El desarrollador puede usar el panel para revisar una integración (HU-01). El usuario del servicio se beneficia de la continuidad de sus conexiones (HU-04).
 
-  Las pruebas se centrarán en el perfil del operador del #emph[proxy]. Se buscarán participantes con experiencia en la operación de servicios en Linux y en la lectura de registros.
+  Las pruebas se centraron en el perfil del operador del #emph[proxy]. Las tareas se diseñaron para ese perfil, que requiere experiencia en la operación de servicios en Linux y en la lectura de registros.
 
-  Se observará si quienes participen pueden explicar cómo salió la migración, interpretar el costo en CPU y memoria, investigar un intento fallido y distinguir el servidor HTTP de los procesos entre los que ocurre el traspaso. Por cada tarea se anotarán el resultado, la ayuda y las confusiones. La guía y la ficha de registro se incluyen en el #link(<anexo-pruebas>)[Anexo B].
+  Las tareas evaluaron si los participantes podían explicar el resultado de la migración, interpretar el costo en CPU y memoria, investigar un intento fallido y distinguir el servidor HTTP de los procesos entre los que ocurre el traspaso. La guía y las fichas de registro se incluyen en el #link(<anexo-pruebas>)[Anexo B].
 
   #heading-level-2("2.7", "Resultados de las pruebas de usuario")
 
-  // Completar con los hallazgos registrados en el Anexo B.
+  Se realizaron seis pruebas con el prototipo de Figma. Los seis participantes resolvieron correctamente las tareas de Resumen, Recursos y Servidores. Los resultados individuales se recogen en el #link(<anexo-pruebas>)[Anexo B].
+
+  La decisión sobre el retiro del proceso anterior fue el punto de mayor dificultad. Tres participantes coincidieron con el criterio de mantener el proceso ante un rechazo o una confirmación pendiente. Una persona dudó ante el intento incompleto y otra solo indicó qué haría ante el rechazo. Una persona interpretó los dos registros como un mismo intento porque compartían los PID. En el registro, cada intento tiene su propio identificador, aunque los procesos sean los mismos.
+
+  La prioridad es destacar el identificador de cada intento e indicar que el retiro requiere confirmar que el proceso nuevo asumió todas las conexiones previstas. En Recursos, un participante preguntó por el significado de la línea base y de la abreviatura pp. El panel puede identificar la línea base como la ejecución sin actualización y escribir puntos porcentuales junto al valor de CPU. También se propuso mostrar porcentajes en las barras de Resumen, simplificar el acceso a Logs desde Servidores y permitir ordenar y filtrar los registros por columna. Un participante valoró que el panel muestra una cantidad manejable de información.
 ]
