@@ -25,24 +25,6 @@
   ]
 ]
 
-#let explicit-declaration() = [
-  #set par(first-line-indent: 0pt, leading: 1em, spacing: 1em)
-  #align(center)[#bold[Declaración Expresa]]
-  #v(1.2em)
-  Yo, #author, acuerdo y reconozco que:
-
-  La titularidad de los derechos patrimoniales de autor (derechos de autor) del proyecto de graduación corresponderá al autor o autores, sin perjuicio de lo cual la ESPOL recibe en este acto una licencia gratuita de plazo indefinido para el uso no comercial y comercial de la obra con facultad de sublicenciar, incluyendo la autorización para su divulgación, así como para la creación y uso de obras derivadas. En el caso de usos comerciales se respetará el porcentaje de participación en beneficios que corresponda a favor del autor o autores.
-
-  La titularidad total y exclusiva sobre los derechos patrimoniales de patente de invención, modelo de utilidad, diseño industrial, secreto industrial, software o información no divulgada que corresponda o pueda corresponder respecto de cualquier investigación, desarrollo tecnológico o invención realizada por mí durante el desarrollo del proyecto de graduación, pertenecerán de forma total, exclusiva e indivisible a la ESPOL, sin perjuicio del porcentaje que me corresponda de los beneficios económicos que la ESPOL reciba por la explotación de mi innovación, de ser el caso.
-
-  En los casos donde la Oficina de Transferencia de Resultados de Investigación (OTRI) de la ESPOL comunique al autor que existe una innovación potencialmente patentable sobre los resultados del proyecto de graduación, no se realizará publicación o divulgación alguna, sin la autorización expresa y previa de la ESPOL.
-
-  #v(1.2em)
-  Guayaquil, #box(width: 4cm, stroke: (bottom: .5pt))[ ] del #year.
-  #v(4.2cm)
-  #align(center)[#line(length: 7cm) #linebreak() #author]
-]
-
 #let examiners() = [
   #set par(first-line-indent: 0pt)
   #align(center)[#bold[Evaluadores]]

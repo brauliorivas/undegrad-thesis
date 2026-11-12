@@ -152,27 +152,27 @@
 
   La biblioteca registrará eventos del traspaso y ofrecerá un panel HTML opcional. Al habilitar la observabilidad en el #emph[proxy] de demostración, la biblioteca iniciará un servidor HTTP local para mostrar el panel. La instrumentación registrará el identificador y la hora de cada intento, los identificadores de proceso (PID) de las dos instancias locales del #emph[proxy] y el resultado. El #emph[proxy] de demostración podrá asociar cada intento con el identificador del servidor HTTP que ya atiende la conexión. Los registros se limitarán a metadatos operativos y excluirán los secretos TLS y los cuerpos HTTP.
 
-  - *Resumen.* Presentará el promedio de duración de las migraciones exitosas, contado desde la solicitud hasta la confirmación de activación. Mostrará los intentos exitosos y fallidos, con distinción entre rechazos y traspasos incompletos. La sobrecarga se expresará como la diferencia de CPU en puntos porcentuales y de memoria residente en MiB respecto a la ejecución sin actualización bajo carga equivalente.
-  - *Logs.* Mostrará una fila por intento, con hora, identificador, PID del proceso anterior, PID del proceso nuevo, duración hasta la activación cuando se haya confirmado, resultado y detalle operativo. El registro podrá filtrarse por resultado.
+  - *Resumen.* Presentará el promedio de duración de las migraciones exitosas, contado desde la solicitud hasta la confirmación de activación. Mostrará los totales de intentos exitosos y fallidos y la proporción de éxitos, rechazos y traspasos incompletos. El panel expresará el consumo adicional de CPU como un aumento relativo en porcentaje y el de memoria residente como una diferencia en MiB. Ambos incrementos se calcularán respecto a la ejecución sin actualización bajo carga equivalente.
+  - *Logs.* Mostrará una fila por intento, con hora, identificador, PID del proceso anterior, PID del proceso nuevo, duración hasta la activación cuando se haya confirmado, resultado y detalle operativo. El registro podrá ordenarse por hora en ambos sentidos y filtrarse por hora o por resultado. La vista indica que el proceso anterior solo se retira cuando se confirma que el nuevo asumió todas las conexiones previstas.
   - *Servidores.* Agrupará los intentos, los éxitos y los fallos por el servidor HTTP que ya atiende la conexión #emph[proxy]–servidor. Mostrará la tasa de éxito y la duración media de los intentos exitosos por servidor. El traspaso de las conexiones ocurre entre los dos procesos del #emph[proxy] en el mismo equipo Linux.
 
-  Las figuras #ref(<panel-resumen>, supplement: none), #ref(<panel-logs>, supplement: none) y #ref(<panel-servidores>, supplement: none) muestran las tres vistas principales del prototipo en Figma con datos de ejemplo.#footnote[#link("https://www.figma.com/design/h3bnz9BI44GdkIczqj9SYo?node-id=4-38")[Prototipo del panel de observabilidad en Figma.]] El #link(<anexo-prototipo>)[Anexo C] incluye todas las pantallas y muestra cómo se navega entre ellas. Las mediciones se obtendrán de las ejecuciones experimentales descritas en la sección 2.5.
+  Las figuras #ref(<panel-resumen>, supplement: none), #ref(<panel-logs>, supplement: none) y #ref(<panel-servidores>, supplement: none) muestran las tres vistas principales del prototipo en Figma con datos de ejemplo.#footnote[#link("https://www.figma.com/design/h3bnz9BI44GdkIczqj9SYo?node-id=4-38")[Prototipo del panel de observabilidad en Figma.]] El #link(<anexo-prototipo>)[Anexo C] reúne las vistas principales y documenta el acceso al registro de fallos. Las mediciones se obtendrán de las ejecuciones experimentales descritas en la sección 2.5.
 
   #chapter-figure(
     [Resumen de las migraciones],
-    image("figures/panel/resumen.jpg", width: 100%, alt: "Resumen del prototipo con duración media, resultados y consumo de recursos."),
+    image("figures/panel/resumen.png", width: 100%, alt: "Resumen con duración media, totales de intentos, distribución porcentual y consumo adicional de CPU y memoria."),
     target: label("panel-resumen"),
   )
 
   #chapter-figure(
     [Registro de migraciones],
-    image("figures/panel/logs.jpg", width: 100%, alt: "Logs del prototipo con hora, procesos, duración, resultado y detalle de cada intento."),
+    image("figures/panel/logs.png", width: 100%, alt: "Registro con identificadores de intento, PID de ambos procesos, orden y filtro por hora y condición para el retiro del proceso anterior."),
     target: label("panel-logs"),
   )
 
   #chapter-figure(
     [Resultados por servidor HTTP],
-    image("figures/panel/servidores.jpg", width: 100%, alt: "Vista Servidores del prototipo con el número de intentos y sus resultados por servidor HTTP."),
+    image("figures/panel/servidores.png", width: 100%, alt: "Vista Servidores del prototipo con el número de intentos y sus resultados por servidor HTTP."),
     target: label("panel-servidores"),
   )
 

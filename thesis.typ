@@ -16,9 +16,9 @@
 )
 
 #cover()
-#pagebreak()
-#explicit-declaration()
-#pagebreak()
+#page(paper: "a4", margin: 0pt, numbering: none, header: none, footer: none)[
+  #image("files/declaracion-expresa-mi.pdf", page: 1, width: 100%, alt: "Declaración Expresa firmada.")
+]
 #examiners()
 
 // Roman numbering starts at I. The cover, declaration, and examiner pages are not numbered.
